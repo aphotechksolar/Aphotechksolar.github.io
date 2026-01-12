@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice | Aphotech Solar Solution</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/mobile.css">
+
+  <style>
+    .invoice-box{
+      max-width:800px;
+      margin:auto;
+      background:#fff;
+      padding:2rem;
+      border-radius:10px;
+      box-shadow:0 10px 25px rgba(0,0,0,.08);
+    }
+    .invoice-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:1.5rem;
+    }
+    .invoice-header img{height:50px}
+    table{width:100%;border-collapse:collapse;margin-top:1rem}
+    th,td{border:1px solid #ddd;padding:10px;text-align:left}
+    th{background:#f5f7f6}
+    .total{text-align:right;font-weight:700}
+  </style>
+</head>
+
+<body class="invoice-page">
+
+<section class="section gray">
+  <div class="invoice-box">
+
+    <div class="invoice-header">
+      <div>
+        <h2>Aphotech Solar-Solution Enterprises</h2>
+        <p>📞 08165029912<br>📧 aphotechsolar@gmail.com</p>
+      </div>
+      <img src="assets/images/logo.png" alt="Logo">
+    </div>
+
+    <p>
+      <strong>Invoice No:</strong> APS-001<br>
+      <strong>Date:</strong> ____________
+    </p>
+
+    <p>
+      <strong>Billed To:</strong><br>
+      Client Name:<br>
+      Phone:<br>
+      Address:
+    </p>
+
+    <table>
+      <tr>
+        <th>Description</th>
+        <th>Qty</th>
+        <th>Unit Price</th>
+        <th>Total</th>
+      </tr>
+      <tr>
+        <td>Solar Installation (e.g. 5kVA)</td>
+        <td>1</td>
+        <td>₦4,500,000</td>
+        <td>₦4,500,000</td>
+      </tr>
+      <tr>
+        <td colspan="3" class="total">Grand Total</td>
+        <td><strong>₦4,500,000</strong></td>
+      </tr>
+    </table>
+
+    <h3 style="margin-top:1.5rem">Payment Details</h3>
+    <p>
+      Bank: <strong>Moniepoint MFB</strong><br>
+      Account Name: <strong>Aphotech Solar-solution Enterprises</strong><br>
+      Account Number: <strong>6531397045</strong>
+    </p>
+
+    <p style="margin-top:1rem">
+      <strong>Note:</strong> Payment confirms acceptance of installation terms.
+    </p>
+
+  </div>
+</section>
+
+</body>
+</html>

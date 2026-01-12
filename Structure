@@ -1,0 +1,37 @@
+aphotech-solar/
+│
+├── index.html                # Home page
+├── packages.html             # Solar packages & pricing
+├── projects.html             # Completed projects / gallery
+├── contact.html              # Contact + quote form
+│
+├── invoice/
+│   ├── invoice.html          # Auto-generated invoice page
+│   ├── invoice-history.html  # Saved invoice records
+│   ├── invoice.css           # Invoice styling
+│   └── invoice.js            # Invoice logic (P + R)
+│
+├── assets/
+│   ├── css/
+│   │   ├── style.css         # Main website CSS
+│   │   └── mobile.css        # Mobile responsiveness
+│   │
+│   ├── js/
+│   │   ├── main.js           # Animations, scroll, UI
+│   │   ├── quote.js          # Form → invoice redirect
+│   │   └── gallery.js        # Lightbox / projects
+│   │
+│   └── images/
+│       ├── logo.png          # Your logo
+│       ├── solar-bg.jpg      # Hero background
+│       ├── project1.jpg
+│       ├── project2.jpg
+│       └── project3.jpg
+│
+├── admin/
+│   ├── dashboard.html        # (Future) admin panel
+│   ├── admin.css
+│   └── admin.js
+│
+├── README.md                 # Project description
+└── .gitignore
