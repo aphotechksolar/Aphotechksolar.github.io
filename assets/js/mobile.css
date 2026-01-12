@@ -1,0 +1,99 @@
+/* ===============================
+   APHOTECH SOLAR – MOBILE STYLES
+   =============================== */
+
+@media (max-width: 768px) {
+
+  /* GENERAL */
+  body {
+    font-size: 15px;
+  }
+
+  .section {
+    padding: 2.5rem 1rem;
+  }
+
+  h1 {
+    font-size: 1.7rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  /* HEADER & NAV */
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .nav-links a {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+    border-radius: 16px;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 3rem 1rem;
+  }
+
+  .hero p {
+    font-size: 0.95rem;
+  }
+
+  .hero .btn {
+    padding: 0.55rem 1.1rem;
+    font-size: 0.85rem;
+  }
+
+  /* GRID */
+  .grid {
+    gap: 1rem;
+  }
+
+  .card {
+    padding: 1.2rem;
+  }
+
+  /* PACKAGES */
+  .package-price {
+    font-size: 1.2rem;
+  }
+
+  .package-btn {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.75rem;
+  }
+
+  /* PROJECT IMAGES */
+  .project-img {
+    border-radius: 8px;
+  }
+
+  /* FOOTER */
+  footer {
+    padding-bottom: 4.5rem; /* space for WhatsApp */
+  }
+
+  .footer-socials a {
+    width: 34px;
+    height: 34px;
+    font-size: 0.85rem;
+  }
+
+  /* WHATSAPP FLOAT */
+  .whatsapp-float {
+    bottom: 15px;
+    right: 15px;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.75rem;
+    z-index: 30;
+  }
+}
