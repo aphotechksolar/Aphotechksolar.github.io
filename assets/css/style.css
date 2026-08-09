@@ -1238,3 +1238,121 @@ body::before {
   }
 
    }
+
+
+/* =====================================================
+   PACKAGE BADGES
+   IMPORTANT:
+   Badges are BELOW the image, NOT ON TOP OF THE IMAGE.
+===================================================== */
+
+.listing-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.listing-badge-row {
+  min-height: 40px;
+  padding: 8px 14px 2px;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+}
+
+.listing-badge {
+  position: static !important;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 11px;
+
+  border-radius: 7px;
+
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  line-height: 1;
+
+  white-space: nowrap;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+
+/* Popular */
+
+.popular-badge {
+  background: #0f9d58;
+}
+
+
+/* Best Seller */
+
+.best-seller-badge {
+  background: #0f9d58;
+}
+
+
+/* Premium */
+
+.premium-badge {
+  background: #e5a900;
+}
+
+
+/* Commercial */
+
+.commercial-badge {
+  background: #1769aa;
+}
+
+
+/* Custom */
+
+.custom-badge {
+  background: #7b3fa1;
+}
+
+
+/* =====================================================
+   MAKE FLYER IMAGES LOOK CLEAN
+===================================================== */
+
+.listing-image img {
+  width: 100%;
+  display: block;
+
+  object-fit: cover;
+
+  transition: transform 0.3s ease;
+}
+
+
+.solar-listing:hover .listing-image img {
+  transform: scale(1.02);
+}
+
+
+/* =====================================================
+   MOBILE BADGE
+===================================================== */
+
+@media (max-width: 768px) {
+
+  .listing-badge-row {
+    min-height: 38px;
+    padding: 7px 10px 2px;
+  }
+
+  .listing-badge {
+    font-size: 11px;
+    padding: 6px 9px;
+  }
+
+}
