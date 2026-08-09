@@ -2078,3 +2078,367 @@ body::before {
   }
 
    }
+
+
+/* =========================================================
+   SOLAR APPLIANCES
+   Aphotech Solar Solution
+========================================================= */
+
+.appliances-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 35px 20px 60px;
+}
+
+.appliances-heading {
+  margin-bottom: 22px;
+}
+
+.appliances-heading .section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #08a944;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .8px;
+  margin-bottom: 5px;
+}
+
+.appliances-heading h2 {
+  margin: 3px 0 5px;
+  color: #263238;
+  font-size: 1.7rem;
+}
+
+.appliances-heading p {
+  color: #74828a;
+  font-size: .88rem;
+}
+
+
+/* =========================================================
+   APPLIANCE GRID
+========================================================= */
+
+.appliances-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+
+/* =========================================================
+   APPLIANCE CARD
+========================================================= */
+
+.appliance-card {
+  background: #ffffff;
+  border: 1px solid #e1e8e5;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: .25s ease;
+}
+
+.appliance-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0,0,0,.09);
+}
+
+
+/* =========================================================
+   APPLIANCE IMAGE
+========================================================= */
+
+.appliance-image {
+  position: relative;
+  width: 100%;
+  height: 230px;
+  background: #edf1ef;
+  overflow: hidden;
+}
+
+.appliance-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform .3s ease;
+}
+
+.appliance-card:hover .appliance-image img {
+  transform: scale(1.03);
+}
+
+
+/* =========================================================
+   APPLIANCE BADGE
+========================================================= */
+
+.appliance-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+
+  display: inline-flex;
+  align-items: center;
+
+  background: #08b64b;
+  color: #ffffff;
+
+  padding: 6px 10px;
+  border-radius: 6px;
+
+  font-size: .68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+
+  z-index: 2;
+}
+
+.fan-badge {
+  background: #08a944;
+}
+
+.iron-badge {
+  background: #1769aa;
+}
+
+
+/* =========================================================
+   APPLIANCE CONTENT
+========================================================= */
+
+.appliance-content {
+  padding: 14px;
+}
+
+.appliance-content h3 {
+  color: #27353a;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.appliance-price {
+  color: #08a944;
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 4px 0 7px;
+}
+
+.appliance-content p {
+  color: #65757b;
+  font-size: .83rem;
+  line-height: 1.5;
+
+  min-height: 48px;
+  margin-bottom: 9px;
+}
+
+
+/* =========================================================
+   APPLIANCE META
+========================================================= */
+
+.appliance-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  color: #89959a;
+  font-size: .72rem;
+
+  padding-bottom: 11px;
+  border-bottom: 1px solid #edf0ef;
+}
+
+.appliance-meta i {
+  color: #08b64b;
+  margin-right: 3px;
+}
+
+
+/* =========================================================
+   APPLIANCE BUTTONS
+========================================================= */
+
+.appliance-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.appliance-buy {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  background: #08b64b;
+  color: #ffffff;
+
+  border-radius: 6px;
+  padding: 10px;
+
+  font-size: .8rem;
+  font-weight: 800;
+
+  text-align: center;
+}
+
+.appliance-buy:hover {
+  background: #078e3b;
+}
+
+.appliance-whatsapp {
+  width: 43px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #25d366;
+  color: #ffffff;
+
+  border-radius: 6px;
+  font-size: 1.1rem;
+}
+
+.appliance-whatsapp:hover {
+  background: #1ebe5d;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .appliances-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+  .appliances-section {
+    padding: 25px 8px 45px;
+  }
+
+  .appliances-heading {
+    padding: 0 6px;
+    margin-bottom: 18px;
+  }
+
+  .appliances-heading h2 {
+    font-size: 1.4rem;
+  }
+
+  .appliances-heading p {
+    font-size: .78rem;
+    line-height: 1.5;
+  }
+
+  .appliances-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .appliance-image {
+    height: 170px;
+  }
+
+  .appliance-content {
+    padding: 9px;
+  }
+
+  .appliance-content h3 {
+    font-size: .84rem;
+    line-height: 1.25;
+  }
+
+  .appliance-price {
+    font-size: .98rem;
+  }
+
+  .appliance-content p {
+    font-size: .68rem;
+    line-height: 1.45;
+    min-height: 40px;
+  }
+
+  .appliance-meta {
+    font-size: .58rem;
+    gap: 5px;
+  }
+
+  .appliance-actions {
+    margin-top: 8px;
+    gap: 5px;
+  }
+
+  .appliance-buy {
+    font-size: .68rem;
+    padding: 8px 3px;
+  }
+
+  .appliance-whatsapp {
+    width: 34px;
+    font-size: .85rem;
+  }
+
+  .appliance-badge {
+    top: 7px;
+    left: 7px;
+    padding: 4px 6px;
+    font-size: .55rem;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+  .appliances-grid {
+    gap: 4px;
+  }
+
+  .appliance-image {
+    height: 145px;
+  }
+
+  .appliance-content {
+    padding: 8px;
+  }
+
+  .appliance-content h3 {
+    font-size: .76rem;
+  }
+
+  .appliance-price {
+    font-size: .88rem;
+  }
+
+  .appliance-content p {
+    font-size: .62rem;
+  }
+
+  .appliance-meta {
+    font-size: .55rem;
+  }
+
+}
