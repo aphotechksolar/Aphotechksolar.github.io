@@ -1785,3 +1785,296 @@ body::before {
   }
 
 }
+
+
+/* =========================================================
+   SOLAR APPLIANCES SECTION
+========================================================= */
+
+.appliances-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 20px 60px;
+}
+
+.appliances-heading {
+  margin-bottom: 20px;
+}
+
+.appliances-heading h2 {
+  margin: 4px 0;
+  color: #263238;
+  font-size: 1.7rem;
+}
+
+.appliances-heading p {
+  color: #74828a;
+  font-size: .88rem;
+}
+
+
+/* ================= APPLIANCE GRID ================= */
+
+.appliances-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+
+/* ================= APPLIANCE CARD ================= */
+
+.appliance-card {
+  background: #fff;
+  border: 1px solid #e1e8e5;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: .25s ease;
+}
+
+.appliance-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0,0,0,.09);
+}
+
+
+/* ================= APPLIANCE IMAGE ================= */
+
+.appliance-image {
+  height: 230px;
+  position: relative;
+  overflow: hidden;
+  background: #edf1ef;
+}
+
+.appliance-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform .3s ease;
+}
+
+.appliance-card:hover .appliance-image img {
+  transform: scale(1.03);
+}
+
+
+/* ================= BADGE ================= */
+
+.appliance-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+
+  background: #08b64b;
+  color: #fff;
+
+  padding: 6px 10px;
+  border-radius: 5px;
+
+  font-size: .68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.fan-badge {
+  background: #1769aa;
+}
+
+.iron-badge {
+  background: #7b3fa1;
+}
+
+
+/* ================= CONTENT ================= */
+
+.appliance-content {
+  padding: 15px;
+}
+
+.appliance-content h3 {
+  color: #27353a;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.appliance-price {
+  color: #08a944;
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 5px 0;
+}
+
+.appliance-content p {
+  color: #65757b;
+  font-size: .83rem;
+  min-height: 48px;
+  margin-bottom: 9px;
+}
+
+
+/* ================= META ================= */
+
+.appliance-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  color: #89959a;
+  font-size: .72rem;
+
+  padding-bottom: 11px;
+  border-bottom: 1px solid #edf0ef;
+}
+
+.appliance-meta i {
+  color: #08b64b;
+  margin-right: 3px;
+}
+
+
+/* ================= BUTTONS ================= */
+
+.appliance-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.appliance-buy {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #08b64b;
+  color: #fff;
+
+  border-radius: 6px;
+  padding: 10px;
+
+  font-weight: 800;
+  font-size: .85rem;
+}
+
+.appliance-buy:hover {
+  background: #078e3b;
+}
+
+.appliance-whatsapp {
+  width: 43px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #25d366;
+  color: #fff;
+
+  border-radius: 6px;
+  font-size: 1.1rem;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .appliances-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .appliances-section {
+    padding: 5px 8px 45px;
+  }
+
+  .appliances-heading {
+    padding: 0 6px;
+  }
+
+  .appliances-heading h2 {
+    font-size: 1.4rem;
+  }
+
+  .appliances-heading p {
+    font-size: .78rem;
+  }
+
+  .appliances-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .appliance-image {
+    height: 170px;
+  }
+
+  .appliance-content {
+    padding: 9px;
+  }
+
+  .appliance-content h3 {
+    font-size: .84rem;
+    line-height: 1.25;
+  }
+
+  .appliance-price {
+    font-size: .98rem;
+  }
+
+  .appliance-content p {
+    font-size: .7rem;
+    min-height: 42px;
+  }
+
+  .appliance-meta {
+    font-size: .61rem;
+    gap: 6px;
+  }
+
+  .appliance-buy {
+    font-size: .7rem;
+    padding: 8px 4px;
+  }
+
+  .appliance-whatsapp {
+    width: 35px;
+    font-size: .9rem;
+  }
+
+  .appliance-badge {
+    font-size: .55rem;
+    padding: 4px 6px;
+  }
+
+}
+
+
+@media (max-width: 380px) {
+
+  .appliance-image {
+    height: 145px;
+  }
+
+  .appliance-content h3 {
+    font-size: .76rem;
+  }
+
+  .appliance-price {
+    font-size: .88rem;
+  }
+
+  .appliance-content p {
+    font-size: .64rem;
+  }
+
+   }
