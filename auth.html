@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Login | Aphotech Solar Solution
+  </title>
+
+  <meta
+    name="description"
+    content="Login or create your Aphotech Solar Solution account."
+  >
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="assets/css/auth.css"
+  >
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     AUTH PAGE
+===================================================== -->
+
+<main class="auth-page">
+
+  <div class="auth-card">
+
+
+    <!-- LOGO -->
+
+    <div class="auth-logo">
+
+      <img
+        src="assets/images/logo.png"
+        alt="Aphotech Solar Solution"
+      >
+
+      <h1>
+        Aphotech
+      </h1>
+
+      <p>
+        Solar Solution
+      </p>
+
+    </div>
+
+
+    <!-- =================================================
+         LOGIN
+    ================================================== -->
+
+    <section
+      id="loginForm"
+      class="auth-form"
+    >
+
+      <h2>
+        Welcome Back
+      </h2>
+
+      <p class="auth-subtitle">
+        Login to access Aphotech Solar Solutions.
+      </p>
+
+
+      <label>
+        Email
+      </label>
+
+      <div class="input-box">
+
+        <i class="fa-solid fa-envelope"></i>
+
+        <input
+          type="email"
+          id="loginEmail"
+          placeholder="Enter your email"
+          autocomplete="email"
+        >
+
+      </div>
+
+
+      <label>
+        Password
+      </label>
+
+      <div class="input-box">
+
+        <i class="fa-solid fa-lock"></i>
+
+        <input
+          type="password"
+          id="loginPassword"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+        >
+
+      </div>
+
+
+      <button
+        type="button"
+        class="auth-button"
+        onclick="loginUser()"
+      >
+
+        <i class="fa-solid fa-right-to-bracket"></i>
+
+        Login
+
+      </button>
+
+
+      <p
+        id="loginMessage"
+        class="auth-message"
+      ></p>
+
+
+      <div class="auth-switch">
+
+        Don't have an account?
+
+        <button
+          type="button"
+          onclick="showSignup()"
+        >
+          Create Account
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================
+         SIGN UP
+    ================================================== -->
+
+    <section
+      id="signupForm"
+      class="auth-form hidden"
+    >
+
+      <h2>
+        Create Account
+      </h2>
+
+      <p class="auth-subtitle">
+        Join Aphotech Solar Solution.
+      </p>
+
+
+      <label>
+        Full Name
+      </label>
+
+      <div class="input-box">
+
+        <i class="fa-solid fa-user"></i>
+
+        <input
+          type="text"
+          id="signupName"
+          placeholder="Your full name"
+          autocomplete="name"
+        >
+
+      </div>
+
+
+      <label>
+        Phone / WhatsApp
+      </label>
+
+      <div class="input-box">
+
+        <i class="fa-brands fa-whatsapp"></i>
+
+        <input
+          type="tel"
+          id="signupPhone"
+          placeholder="08012345678"
+          autocomplete="tel"
+        >
+
+      </div>
+
+
+      <label>
+        State
+      </label>
+
+      <div class="input-box">
+
+        <i class="fa-solid fa-location-dot"></i>
+
+        <input
+          type="text"
+          id="signupState"
+          placeholder="e.g. Lagos"
+        >
+
+      </div>
+
+
+      <label>
+        Email
+      </label>
+
+      <div class="input-box">
+
+        <i class="fa-solid fa-envelope"></i>
+
+        <input
+          type="email"
+          id="signupEmail"
+          placeholder="Enter your email"
+          autocomplete="email"
+        >
+
+      </div>
+
+
+      <label>
+        Password
+      </label>
+
+      <div class="input-box">
+
+        <i class="fa-solid fa-lock"></i>
+
+        <input
+          type="password"
+          id="signupPassword"
+          placeholder="At least 6 characters"
+          autocomplete="new-password"
+        >
+
+      </div>
+
+
+      <label class="consent">
+
+        <input
+          type="checkbox"
+          id="privacyConsent"
+        >
+
+        <span>
+          I agree to the collection and use of my
+          information for my Aphotech account,
+          orders and customer support.
+        </span>
+
+      </label>
+
+
+      <button
+        type="button"
+        class="auth-button"
+        onclick="signupUser()"
+      >
+
+        <i class="fa-solid fa-user-plus"></i>
+
+        Create Account
+
+      </button>
+
+
+      <p
+        id="signupMessage"
+        class="auth-message"
+      ></p>
+
+
+      <div class="auth-switch">
+
+        Already have an account?
+
+        <button
+          type="button"
+          onclick="showLogin()"
+        >
+          Login
+
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <p class="secure-note">
+
+      <i class="fa-solid fa-shield-halved"></i>
+
+      Your account information is securely protected.
+
+    </p>
+
+  </div>
+
+</main>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<!-- APHOTECH AUTH -->
+
+<script src="assets/js/auth.js"></script>
+
+
+</body>
+
+</html>
