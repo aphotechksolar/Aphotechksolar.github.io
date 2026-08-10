@@ -3,51 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Account | Aphotech Solar Solution</title>
+<title>My Account | Aphotech Solar</title>
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/mobile.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 .account-card{max-width:650px;margin:3rem auto;background:#fff;padding:2rem;border-radius:18px;box-shadow:0 12px 35px rgba(0,0,0,.08)}
-.account-row{padding:1rem 0;border-bottom:1px solid #eee}.logout-btn{border:0;cursor:pointer;margin-top:1.5rem}
+.logout-btn{border:0;cursor:pointer;margin-top:1.5rem}
 </style>
 </head>
 <body>
-<header><div class="navbar"><div class="logo"><img src="assets/images/logo.png" alt="Aphotech Solar Logo"><span>Aphotech Solar</span></div><nav class="nav-links"><a href="index.html">Home</a><a href="packages.html">Packages</a><a href="projects.html">Projects</a><a href="contact.html">Contact</a></nav></div></header>
-<section class="section gray"><div class="container"><div class="account-card">
-<h1>My Account</h1><p id="accountMessage">Checking your account...</p><div id="profileData"></div>
-<button type="button" class="btn logout-btn" id="logoutBtn">Logout</button>
-</div></div></section>
+<header><div class="navbar">
+<div class="logo"><img src="assets/images/logo.png" alt="Aphotech Solar Logo"><span>Aphotech Solar</span></div>
+<nav class="nav-links"><a href="index.html">Home</a><a href="packages.html">Packages</a><a href="projects.html">Projects</a><a href="contact.html">Contact</a></nav>
+</div></header>
+
+<section class="section gray">
+<div class="container">
+<div class="account-card">
+<h1>My Account</h1>
+<p id="accountMessage">Loading your information...</p>
+<div id="profileData"></div>
+<button type="button" class="btn logout-btn" id="logoutBtn" onclick="forceLogout()">Logout</button>
+</div>
+</div>
+</section>
+
 <script>
-const SUPABASE_URL="https://xeyuuydojhlhpsdvkfcj.supabase.co";
-const SUPABASE_KEY="sb_publishable_3AgCAUJYvcN4w7hSC3bS9Q_eR2VsIWN";
-const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-function clearSupabaseStorage(){
-  for(const storage of [localStorage,sessionStorage]){
-    const keys=[]; for(let i=0;i<storage.length;i++){const k=storage.key(i);if(k)keys.push(k)}
-    for(const k of keys) if(k.startsWith("sb-")||k.toLowerCase().includes("supabase")) storage.removeItem(k);
+/*
+  EMERGENCY LOGOUT FIX
+  This button intentionally does NOT wait for Supabase.
+  It clears the browser's stored Supabase session immediately,
+  then sends the visitor to the login page.
+*/
+function forceLogout() {
+  var button = document.getElementById("logoutBtn");
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Logging out...";
   }
+
+  try {
+    localStorage.clear();
+  } catch (e) {}
+
+  try {
+    sessionStorage.clear();
+  } catch (e) {}
+
+  window.location.replace("auth.html?loggedout=1&v=" + Date.now());
 }
-async function forceLogout(){
-  const b=document.getElementById("logoutBtn"); if(b){b.disabled=true;b.textContent="Logging out..."}
-  clearSupabaseStorage();
-  try{await client.auth.signOut({scope:"local"})}catch(e){console.warn(e)}
-  clearSupabaseStorage();
-  window.location.href="auth.html?loggedout=1&ts="+Date.now();
-}
-document.getElementById("logoutBtn").addEventListener("click",forceLogout);
-async function loadAccount(){
-  const msg=document.getElementById("accountMessage");
-  try{
-    const r=await client.auth.getSession(); const user=r.data&&r.data.session?r.data.session.user:null;
-    if(!user){window.location.replace("auth.html?redirect=%2Faccount.html");return}
-    const p=await client.from("profiles").select("full_name,phone,state,email,privacy_consent,created_at").eq("id",user.id).maybeSingle();
-    if(p.error){msg.textContent="Your account is active, but profile details could not be loaded.";return}
-    const x=p.data||{}; msg.textContent="Welcome to your Aphotech customer account.";
-    const rows=[["Full Name",x.full_name||"Not provided"],["Phone / WhatsApp",x.phone||"Not provided"],["State",x.state||"Not provided"],["Email",x.email||user.email||"Not provided"],["Privacy Consent",x.privacy_consent?"Accepted":"Not recorded"],["Member Since",x.created_at?new Date(x.created_at).toLocaleDateString():"Not available"]];
-    document.getElementById("profileData").innerHTML=rows.map(r=>`<div class="account-row"><strong>${r[0]}</strong><div>${String(r[1]).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}</div></div>`).join("");
-  }catch(e){console.error(e);msg.textContent="Unable to load your account. Please refresh."}
-}
-loadAccount();
 </script>
-</body></html>
+</body>
+</html>
