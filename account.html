@@ -39,7 +39,30 @@ const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
   const rows=[['Full Name',profile.full_name||'Not provided'],['Phone / WhatsApp',profile.phone||'Not provided'],['State',profile.state||'Not provided'],['Email',profile.email||user.email||'Not provided'],['Privacy Consent',profile.privacy_consent?'Accepted':'Not recorded'],['Member Since',new Date(profile.created_at).toLocaleDateString()]];
   box.innerHTML=rows.map(([label,value])=>`<div class="account-row"><div class="account-label">${label}</div><div class="account-value">${String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</div></div>`).join('');
 })();
-document.getElementById('logoutBtn').addEventListener('click',async()=>{await client.auth.signOut();window.location.replace('auth.html');});
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  const button = document.getElementById('logoutBtn');
+  const originalText = button.innerHTML;
+  button.disabled = true;
+  button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Logging out...';
+
+  try {
+    const { error } = await client.auth.signOut({ scope: 'local' });
+    if (error) throw error;
+
+    // Make sure an old cached session cannot keep the protected pages open.
+    try {
+      localStorage.removeItem('supabase.auth.token');
+    } catch (_) {}
+
+    window.location.replace('auth.html?loggedout=1');
+  } catch (error) {
+    console.error('Logout failed:', error);
+    button.disabled = false;
+    button.innerHTML = originalText;
+    const msg = document.getElementById('accountMessage');
+    msg.textContent = 'Logout failed. Please try again.';
+  }
+});
 </script>
 </body>
 </html>
