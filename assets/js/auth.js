@@ -20,13 +20,9 @@ function getRedirectTarget() {
   if (!value) return "index.html";
 
   /* Only allow same-site paths. */
-  if (value.startsWith("/") && !value.startsWith("//")) {
-    return value;
-  }
+  if (value.startsWith("/") && !value.startsWith("//")) return value;
 
-  if (!value.includes("://") && !value.startsWith("\\")) {
-    return value;
-  }
+  if (!value.includes("://") && !value.startsWith("\\")) return value;
 
   return "index.html";
 }
@@ -67,23 +63,23 @@ async function loginUser() {
 
   if (error) {
     message.classList.add("error");
-    message.textContent = error.message || "Login failed. Please check your details.";
+    message.textContent =
+      error.message || "Login failed. Please check your details.";
     console.error(error);
     return;
   }
 
   if (!data.session) {
     message.classList.add("error");
-    message.textContent = "Login did not create an active session. Please try again.";
+    message.textContent =
+      "Login did not create an active session. Please try again.";
     return;
   }
 
   message.classList.add("success");
   message.textContent = "Login successful. Opening Aphotech...";
 
-  setTimeout(() => {
-    goAfterLogin();
-  }, 500);
+  setTimeout(goAfterLogin, 500);
 }
 
 async function signupUser() {
@@ -97,9 +93,10 @@ async function signupUser() {
 
   message.className = "auth-message";
 
-  if (!name || !email || !password) {
+  if (!name || !phone || !state || !email || !password) {
     message.classList.add("error");
-    message.textContent = "Please complete your name, email and password.";
+    message.textContent =
+      "Please complete your name, phone, state, email and password.";
     return;
   }
 
@@ -117,6 +114,8 @@ async function signupUser() {
 
   message.textContent = "Creating your account...";
 
+  const consentAt = new Date().toISOString();
+
   const { data, error } = await supabaseClient.auth.signUp({
     email,
     password,
@@ -124,28 +123,70 @@ async function signupUser() {
       data: {
         full_name: name,
         phone,
-        state
+        state,
+        privacy_consent: true,
+        privacy_consent_at: consentAt
       }
     }
   });
 
   if (error) {
     message.classList.add("error");
-    message.textContent = error.message;
+
+    if (error.message && error.message.toLowerCase().includes("rate limit")) {
+      message.textContent =
+        "Too many signup emails were requested. Please wait a while and try again.";
+    } else {
+      message.textContent = error.message || "Unable to create your account.";
+    }
+
     console.error(error);
     return;
   }
 
-  message.classList.add("success");
+  /*
+    The database trigger creates public.profiles automatically.
+    If a session is immediately available, sync the profile as a
+    second safety measure. The SQL migration included in this ZIP
+    adds the required own-profile INSERT policy.
+  */
+  if (data.user) {
+    const { error: profileError } = await supabaseClient
+      .from("profiles")
+      .upsert(
+        {
+          id: data.user.id,
+          full_name: name,
+          phone,
+          state,
+          email,
+          privacy_consent: true,
+          privacy_consent_at: consentAt
+        },
+        { onConflict: "id" }
+      );
+
+    if (profileError) {
+      console.warn("Profile sync warning:", profileError);
+    }
+  }
 
   if (data.session) {
-    message.textContent = "Account created successfully. Opening Aphotech...";
-    setTimeout(() => goAfterLogin(), 700);
-  } else {
-    message.classList.add("error");
+    message.classList.add("success");
     message.textContent =
-      "Your account was created, but email confirmation is still enabled in Supabase. Disable Confirm Email in Supabase Authentication settings, then create the account again.";
+      "Account created successfully. Opening Aphotech...";
+    setTimeout(goAfterLogin, 700);
+    return;
   }
+
+  /*
+    If email confirmation is enabled, Supabase creates the account
+    but does not return a session. This message is intentionally
+    neutral so the site works whether confirmation is enabled or off.
+  */
+  message.classList.add("success");
+  message.textContent =
+    "Account created. Please check your email if confirmation is required, then log in.";
 }
 
 async function checkExistingLogin() {
