@@ -142,9 +142,9 @@ async function signupUser() {
     message.textContent = "Account created successfully. Opening Aphotech...";
     setTimeout(() => goAfterLogin(), 700);
   } else {
+    message.classList.add("error");
     message.textContent =
-      "Account created. Please check your email to verify your account, then log in.";
-    showLogin();
+      "Your account was created, but email confirmation is still enabled in Supabase. Disable Confirm Email in Supabase Authentication settings, then create the account again.";
   }
 }
 
