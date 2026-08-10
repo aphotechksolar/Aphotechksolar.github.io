@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Account | Aphotech Solar Solution</title>
+  <meta name="logout-fix" content="2026-08-10-final">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/mobile.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -22,7 +23,7 @@
   <h1><i class="fa-solid fa-user"></i> My Account</h1>
   <p id="accountMessage">Loading your information...</p>
   <div id="profileData"></div>
-  <button class="btn logout-btn" id="logoutBtn">Logout</button>
+  <button type="button" class="btn logout-btn" id="logoutBtn" onclick="forceLogout(event)">Logout</button>
 </div></div></section>
 <script>
 const SUPABASE_URL="https://xeyuuydojhlhpsdvkfcj.supabase.co";
@@ -39,44 +40,42 @@ const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
   const rows=[['Full Name',profile.full_name||'Not provided'],['Phone / WhatsApp',profile.phone||'Not provided'],['State',profile.state||'Not provided'],['Email',profile.email||user.email||'Not provided'],['Privacy Consent',profile.privacy_consent?'Accepted':'Not recorded'],['Member Since',new Date(profile.created_at).toLocaleDateString()]];
   box.innerHTML=rows.map(([label,value])=>`<div class="account-row"><div class="account-label">${label}</div><div class="account-value">${String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</div></div>`).join('');
 })();
-document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+document.getElementById('logoutBtn').addEventListener('click', forceLogout);
 
-async function logoutUser() {
+async function forceLogout(event) {
+  if (event) event.preventDefault();
+
   const button = document.getElementById('logoutBtn');
-  const msg = document.getElementById('accountMessage');
-  button.disabled = true;
-  button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Logging out...';
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Logging out...';
+  }
 
-  // Clear Supabase's locally cached session FIRST. This makes logout work
-  // even if the network request to Supabase is slow or temporarily fails.
+  // Supabase JS v2 stores the active session in localStorage under:
+  // sb-<project-ref>-auth-token. Remove all Supabase project keys first.
   try {
     const projectRef = new URL(SUPABASE_URL).hostname.split('.')[0];
     const prefix = 'sb-' + projectRef + '-';
-    Object.keys(localStorage).forEach((key) => {
-      if (key === prefix + 'auth-token' || key.startsWith(prefix)) {
-        localStorage.removeItem(key);
+
+    for (const storage of [localStorage, sessionStorage]) {
+      for (let i = storage.length - 1; i >= 0; i--) {
+        const key = storage.key(i);
+        if (key && key.startsWith(prefix)) {
+          storage.removeItem(key);
+        }
       }
-    });
-    Object.keys(sessionStorage).forEach((key) => {
-      if (key === prefix + 'auth-token' || key.startsWith(prefix)) {
-        sessionStorage.removeItem(key);
-      }
-    });
-  } catch (storageError) {
-    console.warn('Could not clear local auth cache:', storageError);
+    }
+  } catch (e) {
+    console.warn('Storage cleanup warning:', e);
   }
 
-  // Tell Supabase to invalidate the session on the server as well.
-  // Do not wait for this request before leaving the account page.
+  // Do not wait for Supabase's network sign-out. Local session removal is
+  // what makes this device/browser immediately logged out.
   try {
-    client.auth.signOut({ scope: 'local' }).catch((error) => {
-      console.warn('Server logout warning:', error);
-    });
-  } catch (error) {
-    console.warn('Logout request warning:', error);
-  }
+    client.auth.signOut({ scope: 'local' }).catch(() => {});
+  } catch (_) {}
 
-  msg.textContent = 'You have been logged out.';
+  // Cache-busting query prevents the browser from showing the old account page.
   window.location.replace('auth.html?loggedout=1&t=' + Date.now());
 }
 </script>
