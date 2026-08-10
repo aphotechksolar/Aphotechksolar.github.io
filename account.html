@@ -31,7 +31,7 @@ const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 (async()=>{
   const {data:{user}}=await client.auth.getUser();
   if(!user) return;
-  const {data:profile,error}=await client.from('profiles').select('full_name,phone,state,email,created_at').eq('id',user.id).single();
+  const {data:profile,error}=await client.from('profiles').select('full_name,phone,state,email,privacy_consent,created_at').eq('id',user.id).single();
   const box=document.getElementById('profileData');
   const msg=document.getElementById('accountMessage');
   if(error){msg.textContent='Your account is active, but your profile details are not available yet. Please refresh and try again.';return;}
@@ -39,30 +39,44 @@ const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
   const rows=[['Full Name',profile.full_name||'Not provided'],['Phone / WhatsApp',profile.phone||'Not provided'],['State',profile.state||'Not provided'],['Email',profile.email||user.email||'Not provided'],['Privacy Consent',profile.privacy_consent?'Accepted':'Not recorded'],['Member Since',new Date(profile.created_at).toLocaleDateString()]];
   box.innerHTML=rows.map(([label,value])=>`<div class="account-row"><div class="account-label">${label}</div><div class="account-value">${String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</div></div>`).join('');
 })();
-document.getElementById('logoutBtn').addEventListener('click', async () => {
+document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+
+async function logoutUser() {
   const button = document.getElementById('logoutBtn');
-  const originalText = button.innerHTML;
+  const msg = document.getElementById('accountMessage');
   button.disabled = true;
   button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Logging out...';
 
+  // Clear Supabase's locally cached session FIRST. This makes logout work
+  // even if the network request to Supabase is slow or temporarily fails.
   try {
-    const { error } = await client.auth.signOut({ scope: 'local' });
-    if (error) throw error;
-
-    // Make sure an old cached session cannot keep the protected pages open.
-    try {
-      localStorage.removeItem('supabase.auth.token');
-    } catch (_) {}
-
-    window.location.replace('auth.html?loggedout=1');
-  } catch (error) {
-    console.error('Logout failed:', error);
-    button.disabled = false;
-    button.innerHTML = originalText;
-    const msg = document.getElementById('accountMessage');
-    msg.textContent = 'Logout failed. Please try again.';
+    const projectRef = new URL(SUPABASE_URL).hostname.split('.')[0];
+    const prefix = 'sb-' + projectRef + '-';
+    Object.keys(localStorage).forEach((key) => {
+      if (key === prefix + 'auth-token' || key.startsWith(prefix)) {
+        localStorage.removeItem(key);
+      }
+    });
+    Object.keys(sessionStorage).forEach((key) => {
+      if (key === prefix + 'auth-token' || key.startsWith(prefix)) {
+        sessionStorage.removeItem(key);
+      }
+    });
+  } catch (storageError) {
+    console.warn('Could not clear local auth cache:', storageError);
   }
-});
+
+  // Tell Supabase to invalidate the session on the server as well.
+  // Do not wait for this request before leaving the account page.
+  try {
+    client.auth.signOut({ scope: 'local' }).catch((error) => {
+      console.warn('Server logout warning:', error);
+    });
+  } catch (error) {
+    console.warn('Logout request warning:', error);
+  }
+
+  msg.textContent = 'You have been logged out.';
+  window.location.replace('auth.html?loggedout=1&t=' + Date.now());
+}
 </script>
-</body>
-</html>
