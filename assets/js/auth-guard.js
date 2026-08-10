@@ -17,6 +17,12 @@ const supabaseClient = supabase.createClient(
 /* Hide the page while the session is being checked. */
 document.documentElement.style.visibility = "hidden";
 
+window.addEventListener("pageshow", () => {
+  if (!localStorage.getItem("sb-xeyuuydojhlhpsdvkfcj-auth-token")) {
+    document.documentElement.style.visibility = "visible";
+  }
+});
+
 async function protectPage() {
   try {
     const { data, error } = await supabaseClient.auth.getSession();
