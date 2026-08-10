@@ -1,0 +1,439 @@
+/* =====================================================
+   APHOTECH SOLAR
+   LOGIN / SIGNUP
+===================================================== */
+
+:root {
+
+  --green: #08b64b;
+  --dark-green: #075c2b;
+  --light-green: #eaf8ef;
+  --text: #263238;
+  --gray: #74828a;
+  --border: #dfe7e3;
+
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+body {
+
+  font-family:
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+  min-height: 100vh;
+
+  background:
+    linear-gradient(
+      rgba(4,72,35,.88),
+      rgba(8,182,75,.78)
+    ),
+    url("../images/solar-bg.jpg")
+    center/cover
+    fixed;
+
+}
+
+
+/* =====================================================
+   PAGE
+===================================================== */
+
+.auth-page {
+
+  min-height: 100vh;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 25px 15px;
+
+}
+
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.auth-card {
+
+  width: 100%;
+
+  max-width: 440px;
+
+  background: #ffffff;
+
+  border-radius: 18px;
+
+  padding: 32px 28px;
+
+  box-shadow:
+    0 20px 60px
+    rgba(0,0,0,.25);
+
+}
+
+
+/* =====================================================
+   LOGO
+===================================================== */
+
+.auth-logo {
+
+  text-align: center;
+
+  margin-bottom: 25px;
+
+}
+
+
+.auth-logo img {
+
+  width: 65px;
+
+  height: 65px;
+
+  object-fit: contain;
+
+  margin: auto;
+
+  border-radius: 12px;
+
+}
+
+
+.auth-logo h1 {
+
+  color: var(--dark-green);
+
+  font-size: 1.55rem;
+
+  margin-top: 8px;
+
+}
+
+
+.auth-logo p {
+
+  color: var(--gray);
+
+  font-size: .85rem;
+
+}
+
+
+/* =====================================================
+   FORM
+===================================================== */
+
+.auth-form h2 {
+
+  color: var(--text);
+
+  font-size: 1.5rem;
+
+  margin-bottom: 4px;
+
+}
+
+
+.auth-subtitle {
+
+  color: var(--gray);
+
+  font-size: .85rem;
+
+  margin-bottom: 20px;
+
+}
+
+
+.auth-form label {
+
+  display: block;
+
+  color: #405158;
+
+  font-size: .82rem;
+
+  font-weight: 700;
+
+  margin-bottom: 6px;
+
+  margin-top: 13px;
+
+}
+
+
+/* =====================================================
+   INPUT
+===================================================== */
+
+.input-box {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 8px;
+
+  background: #fafcfb;
+
+  padding: 0 12px;
+
+  transition: .2s;
+
+}
+
+
+.input-box:focus-within {
+
+  border-color: var(--green);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(8,182,75,.10);
+
+}
+
+
+.input-box i {
+
+  color: var(--green);
+
+  width: 18px;
+
+  text-align: center;
+
+}
+
+
+.input-box input {
+
+  width: 100%;
+
+  border: 0;
+
+  outline: 0;
+
+  background: transparent;
+
+  padding: 13px 2px;
+
+  font-size: .9rem;
+
+  color: var(--text);
+
+}
+
+
+/* =====================================================
+   BUTTON
+===================================================== */
+
+.auth-button {
+
+  width: 100%;
+
+  border: 0;
+
+  background: var(--green);
+
+  color: #ffffff;
+
+  border-radius: 8px;
+
+  padding: 13px;
+
+  margin-top: 20px;
+
+  font-size: .9rem;
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: .2s;
+
+}
+
+
+.auth-button:hover {
+
+  background: #078e3b;
+
+  transform: translateY(-1px);
+
+}
+
+
+/* =====================================================
+   SWITCH
+===================================================== */
+
+.auth-switch {
+
+  text-align: center;
+
+  color: var(--gray);
+
+  font-size: .82rem;
+
+  margin-top: 18px;
+
+}
+
+
+.auth-switch button {
+
+  border: 0;
+
+  background: none;
+
+  color: var(--green);
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+}
+
+
+/* =====================================================
+   CONSENT
+===================================================== */
+
+.consent {
+
+  display: flex !important;
+
+  align-items: flex-start;
+
+  gap: 8px;
+
+  color: #65757b !important;
+
+  font-size: .73rem !important;
+
+  font-weight: 400 !important;
+
+  line-height: 1.4;
+
+}
+
+
+.consent input {
+
+  margin-top: 3px;
+
+  accent-color: var(--green);
+
+}
+
+
+/* =====================================================
+   MESSAGES
+===================================================== */
+
+.auth-message {
+
+  text-align: center;
+
+  font-size: .78rem;
+
+  margin-top: 12px;
+
+  min-height: 20px;
+
+}
+
+
+.auth-message.success {
+
+  color: #087b39;
+
+}
+
+
+.auth-message.error {
+
+  color: #c62828;
+
+}
+
+
+/* =====================================================
+   SECURITY NOTE
+===================================================== */
+
+.secure-note {
+
+  text-align: center;
+
+  color: #89959a;
+
+  font-size: .7rem;
+
+  margin-top: 25px;
+
+}
+
+
+.secure-note i {
+
+  color: var(--green);
+
+  margin-right: 4px;
+
+}
+
+
+/* =====================================================
+   HIDDEN
+===================================================== */
+
+.hidden {
+
+  display: none !important;
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 480px) {
+
+  .auth-card {
+
+    padding: 25px 18px;
+
+    border-radius: 14px;
+
+  }
+
+  .auth-logo img {
+
+    width: 58px;
+
+    height: 58px;
+
+  }
+
+  }
