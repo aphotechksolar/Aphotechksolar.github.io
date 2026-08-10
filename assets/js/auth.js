@@ -86,10 +86,9 @@ async function signupUser() {
   const name = document.getElementById("signupName").value.trim();
   const phone = document.getElementById("signupPhone").value.trim();
   const state = document.getElementById("signupState").value.trim();
-  const email = document.getElementById("signupEmail").value.trim().toLowerCase();
+  const email = document.getElementById("signupEmail").value.trim();
   const password = document.getElementById("signupPassword").value;
   const consent = document.getElementById("privacyConsent").checked;
-  const button = document.querySelector('#signupForm .auth-button');
   const message = document.getElementById("signupMessage");
 
   message.className = "auth-message";
@@ -98,12 +97,6 @@ async function signupUser() {
     message.classList.add("error");
     message.textContent =
       "Please complete your name, phone, state, email and password.";
-    return;
-  }
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    message.classList.add("error");
-    message.textContent = "Please enter a valid email address.";
     return;
   }
 
@@ -121,107 +114,79 @@ async function signupUser() {
 
   message.textContent = "Creating your account...";
 
-  // Prevent accidental double-clicks / duplicate signup requests.
-  if (button) {
-    button.disabled = true;
-    button.dataset.originalText = button.innerHTML;
-    button.innerHTML =
-      '<i class="fa-solid fa-spinner fa-spin"></i> Creating Account...';
-  }
-
   const consentAt = new Date().toISOString();
 
-  try {
-    const { data, error } = await supabaseClient.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: name,
+        phone,
+        state,
+        privacy_consent: true,
+        privacy_consent_at: consentAt
+      }
+    }
+  });
+
+  if (error) {
+    message.classList.add("error");
+
+    if (error.message && error.message.toLowerCase().includes("rate limit")) {
+      message.textContent =
+        "Too many signup emails were requested. Please wait a while and try again.";
+    } else {
+      message.textContent = error.message || "Unable to create your account.";
+    }
+
+    console.error(error);
+    return;
+  }
+
+  /*
+    The database trigger creates public.profiles automatically.
+    If a session is immediately available, sync the profile as a
+    second safety measure. The SQL migration included in this ZIP
+    adds the required own-profile INSERT policy.
+  */
+  if (data.user) {
+    const { error: profileError } = await supabaseClient
+      .from("profiles")
+      .upsert(
+        {
+          id: data.user.id,
           full_name: name,
           phone,
           state,
+          email,
           privacy_consent: true,
           privacy_consent_at: consentAt
-        }
-      }
-    });
+        },
+        { onConflict: "id" }
+      );
 
-    if (error) {
-      throw error;
-    }
-
-    /*
-      The Supabase database trigger creates public.profiles immediately
-      after auth.users is created. This works even when email confirmation
-      is enabled, because the trigger runs inside the database.
-
-      If Supabase returns a live session (email confirmation is disabled),
-      we also upsert the profile as a safety sync.
-    */
-    if (data.user && data.session) {
-      const { error: profileError } = await supabaseClient
-        .from("profiles")
-        .upsert(
-          {
-            id: data.user.id,
-            full_name: name,
-            phone,
-            state,
-            email,
-            privacy_consent: true,
-            privacy_consent_at: consentAt
-          },
-          { onConflict: "id" }
-        );
-
-      if (profileError) {
-        console.warn("Profile safety sync warning:", profileError);
-        // Do not block registration: the database trigger is authoritative.
-      }
-
-      message.classList.add("success");
-      message.textContent =
-        "Account created successfully. Opening Aphotech...";
-      setTimeout(goAfterLogin, 700);
-      return;
-    }
-
-    /*
-      No session means email confirmation is enabled (or Supabase has
-      otherwise withheld the session). The account/profile are still
-      created by Supabase + the database trigger.
-    */
-    message.classList.add("success");
-    message.textContent =
-      "Account created successfully. Please check your email to confirm your account, then log in.";
-  } catch (error) {
-    message.classList.add("error");
-
-    const errorText = (error?.message || "").toLowerCase();
-
-    if (errorText.includes("rate limit")) {
-      message.textContent =
-        "Too many signup emails were requested. Please wait a while and try again.";
-    } else if (
-      errorText.includes("already registered") ||
-      errorText.includes("already exists")
-    ) {
-      message.textContent =
-        "An account with this email already exists. Please log in instead.";
-    } else {
-      message.textContent =
-        error?.message || "Unable to create your account. Please try again.";
-    }
-
-    console.error("Signup error:", error);
-  } finally {
-    if (button) {
-      button.disabled = false;
-      button.innerHTML =
-        button.dataset.originalText ||
-        '<i class="fa-solid fa-user-plus"></i> Create Account';
+    if (profileError) {
+      console.warn("Profile sync warning:", profileError);
     }
   }
+
+  if (data.session) {
+    message.classList.add("success");
+    message.textContent =
+      "Account created successfully. Opening Aphotech...";
+    setTimeout(goAfterLogin, 700);
+    return;
+  }
+
+  /*
+    If email confirmation is enabled, Supabase creates the account
+    but does not return a session. This message is intentionally
+    neutral so the site works whether confirmation is enabled or off.
+  */
+  message.classList.add("success");
+  message.textContent =
+    "Account created. Please check your email if confirmation is required, then log in.";
 }
 
 async function checkExistingLogin() {
