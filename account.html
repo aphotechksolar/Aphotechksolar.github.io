@@ -3,55 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Account | Aphotech Solar</title>
+<title>Customer Dashboard | Aphotech Solar</title>
+<meta name="description" content="Your Aphotech Solar customer dashboard.">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/mobile.css">
-<style>
-.account-card{max-width:650px;margin:3rem auto;background:#fff;padding:2rem;border-radius:18px;box-shadow:0 12px 35px rgba(0,0,0,.08)}
-.logout-btn{border:0;cursor:pointer;margin-top:1.5rem}
-</style>
+<link rel="stylesheet" href="assets/css/account.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body>
-<header><div class="navbar">
-<div class="logo"><img src="assets/images/logo.png" alt="Aphotech Solar Logo"><span>Aphotech Solar</span></div>
-<nav class="nav-links"><a href="index.html">Home</a><a href="packages.html">Packages</a><a href="projects.html">Projects</a><a href="contact.html">Contact</a></nav>
-</div></header>
 
-<section class="section gray">
-<div class="container">
-<div class="account-card">
-<h1>My Account</h1>
-<p id="accountMessage">Loading your information...</p>
-<div id="profileData"></div>
-<button type="button" class="btn logout-btn" id="logoutBtn" onclick="forceLogout()">Logout</button>
-</div>
-</div>
-</section>
+<body class="account-page">
+<header>
+  <div class="navbar">
+    <div class="logo">
+      <img src="assets/images/logo.png" alt="Aphotech Solar Logo">
+      <span>Aphotech Solar</span>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="packages.html">Packages</a>
+      <a href="projects.html">Projects</a>
+      <a href="quote.html">Get a Quote</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
 
-<script>
-/*
-  EMERGENCY LOGOUT FIX
-  This button intentionally does NOT wait for Supabase.
-  It clears the browser's stored Supabase session immediately,
-  then sends the visitor to the login page.
-*/
-function forceLogout() {
-  var button = document.getElementById("logoutBtn");
-  if (button) {
-    button.disabled = true;
-    button.textContent = "Logging out...";
-  }
+<main class="account-main">
+  <section class="account-hero">
+    <div>
+      <span class="account-eyebrow"><i class="fa-solid fa-circle-user"></i> CUSTOMER PORTAL</span>
+      <h1>Welcome, <span id="welcomeName">Customer</span> 👋</h1>
+      <p>Manage your profile and keep track of your solar quote requests in one place.</p>
+    </div>
+    <a class="account-hero-button" href="quote.html">
+      <i class="fa-solid fa-file-circle-plus"></i> Request a Quote
+    </a>
+  </section>
 
-  try {
-    localStorage.clear();
-  } catch (e) {}
+  <section class="account-grid">
 
-  try {
-    sessionStorage.clear();
-  } catch (e) {}
+    <article class="dashboard-card profile-card">
+      <div class="card-title">
+        <div>
+          <span class="small-label">MY PROFILE</span>
+          <h2>Account Information</h2>
+        </div>
+        <i class="fa-solid fa-user"></i>
+      </div>
 
-  window.location.replace("auth.html?loggedout=1&v=" + Date.now());
-}
-</script>
+      <div id="accountMessage" class="dashboard-message">Loading your information...</div>
+
+      <div id="profileData" class="profile-data"></div>
+
+      <div class="dashboard-actions">
+        <a class="secondary-action" href="quote.html">
+          <i class="fa-solid fa-solar-panel"></i> Request New Quote
+        </a>
+        <button type="button" class="danger-action" id="logoutBtn">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </div>
+    </article>
+
+    <article class="dashboard-card stats-card">
+      <div class="card-title">
+        <div>
+          <span class="small-label">OVERVIEW</span>
+          <h2>My Requests</h2>
+        </div>
+        <i class="fa-solid fa-chart-simple"></i>
+      </div>
+
+      <div class="stats-number" id="quoteCount">—</div>
+      <p>Total quote requests</p>
+
+      <div class="mini-stats">
+        <div><strong id="pendingCount">—</strong><span>Pending</span></div>
+        <div><strong id="quotedCount">—</strong><span>Quoted</span></div>
+      </div>
+    </article>
+
+  </section>
+
+  <section class="dashboard-card requests-card">
+    <div class="card-title request-heading">
+      <div>
+        <span class="small-label">QUOTE HISTORY</span>
+        <h2>My Solar Requests</h2>
+        <p>Only requests submitted from your account are shown here.</p>
+      </div>
+      <a class="secondary-action" href="quote.html">
+        <i class="fa-solid fa-plus"></i> New Request
+      </a>
+    </div>
+
+    <div id="requestsMessage" class="dashboard-message">Loading requests...</div>
+    <div id="requestsList" class="requests-list"></div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-grid">
+    <div>
+      <h3>Aphotech Solar Solution</h3>
+      <p>Reliable solar energy solutions you can trust.</p>
+    </div>
+    <div>
+      <h4>Connect With Us</h4>
+      <div class="socials">
+        <a href="https://www.facebook.com/share/1HXq7TuV6T/" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/apho.tech?igsh=YzljYTk1ODg3Zg==" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+        <a href="https://youtube.com/playlist?list=PL1unlOZnZw_6LK3GA493krASMc_EwB4P4&si=HyIm3Dg3RrEgUBdh" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+      </div>
+    </div>
+  </div>
+  <p class="copyright">© 2026 Aphotech Solar Solution. All rights reserved.</p>
+</footer>
+
+<script src="assets/js/account.js"></script>
 </body>
 </html>
