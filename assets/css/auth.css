@@ -437,3 +437,23 @@ body {
   }
 
   }
+
+
+/* =====================================================
+   FORGOT PASSWORD LINK
+===================================================== */
+
+.forgot-password-link {
+  text-align: right;
+  margin-top: 10px;
+}
+
+.forgot-password-link button {
+  border: 0;
+  background: none;
+  color: var(--green);
+  font-weight: 800;
+  font-size: .82rem;
+  cursor: pointer;
+  padding: 3px 0;
+}
