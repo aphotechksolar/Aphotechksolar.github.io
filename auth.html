@@ -137,6 +137,16 @@
       ></p>
 
 
+      <div class="forgot-password-link">
+        <button
+          type="button"
+          onclick="showForgotPassword()"
+        >
+          Forgot Password?
+        </button>
+      </div>
+
+
       <div class="auth-switch">
 
         Don't have an account?
@@ -146,6 +156,77 @@
           onclick="showSignup()"
         >
           Create Account
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================
+         FORGOT PASSWORD
+    ================================================== -->
+
+    <section
+      id="forgotPasswordForm"
+      class="auth-form hidden"
+    >
+
+      <h2>
+        Reset Your Password
+      </h2>
+
+      <p class="auth-subtitle">
+        Enter your email and we'll send you a password reset link.
+      </p>
+
+
+      <label>
+        Email
+      </label>
+
+      <div class="input-box">
+
+        <i class="fa-solid fa-envelope"></i>
+
+        <input
+          type="email"
+          id="resetEmail"
+          placeholder="Enter your email"
+          autocomplete="email"
+        >
+
+      </div>
+
+
+      <button
+        type="button"
+        class="auth-button"
+        onclick="sendPasswordReset()"
+      >
+
+        <i class="fa-solid fa-paper-plane"></i>
+
+        Send Reset Link
+
+      </button>
+
+
+      <p
+        id="resetMessage"
+        class="auth-message"
+      ></p>
+
+
+      <div class="auth-switch">
+
+        Remember your password?
+
+        <button
+          type="button"
+          onclick="showLogin()"
+        >
+          Login
         </button>
 
       </div>
