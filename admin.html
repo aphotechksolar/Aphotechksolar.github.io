@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Aphotech Solar Solution</title>
+  <meta name="description" content="Aphotech Solar administrator dashboard.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+  <header class="admin-topbar">
+    <div class="brand">
+      <img src="assets/images/logo.png" alt="Aphotech logo">
+      <div><strong>Aphotech Solar</strong><span>Admin Dashboard</span></div>
+    </div>
+    <div class="top-actions">
+      <a href="packages.html" class="top-link">View Website</a>
+      <button id="logoutBtn" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </header>
+
+  <main class="admin-shell">
+    <div id="adminMessage" class="admin-message hidden"></div>
+
+    <section class="welcome-row">
+      <div>
+        <p class="eyebrow">BUSINESS CONTROL CENTER</p>
+        <h1>Admin Dashboard</h1>
+        <p>Manage customer requests and update your public prices from one place.</p>
+      </div>
+      <button id="refreshAll" class="primary-btn"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card"><span>All Requests</span><strong id="statAll">0</strong></article>
+      <article class="stat-card"><span>Pending</span><strong id="statPending">0</strong></article>
+      <article class="stat-card"><span>Quoted</span><strong id="statQuoted">0</strong></article>
+      <article class="stat-card"><span>Active Products</span><strong id="statProducts">0</strong></article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div><h2><i class="fa-solid fa-file-circle-check"></i> Customer Quote Requests</h2><p>Review requests and update their progress.</p></div>
+        <select id="statusFilter" class="filter-select">
+          <option value="all">All statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Reviewed">Reviewed</option>
+          <option value="Quoted">Quoted</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Customer</th><th>Request</th><th>Date</th><th>Status</th><th>Quoted Amount</th><th>Action</th></tr></thead>
+          <tbody id="requestsBody"><tr><td colspan="6" class="empty">Loading requests...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div><h2><i class="fa-solid fa-tags"></i> Packages & Product Prices</h2><p>Change a price here and it will update on the public Packages page.</p></div>
+        <button id="showAddProduct" class="secondary-btn"><i class="fa-solid fa-plus"></i> Add Product</button>
+      </div>
+      <div id="productFormWrap" class="product-form-wrap hidden">
+        <form id="productForm" class="product-form">
+          <input type="hidden" id="productId">
+          <label>Product name<input id="productName" required></label>
+          <label>Type<select id="productCategory"><option value="package">Solar Package</option><option value="appliance">Solar Appliance</option></select></label>
+          <label>Price (₦)<input id="productPrice" type="number" min="0" step="1" placeholder="Leave blank for Contact Us"></label>
+          <label>Short description<input id="productDescription"></label>
+          <label>Image path<input id="productImage" placeholder="assets/images/1kva.jpg"></label>
+          <label>Badge<input id="productBadge" placeholder="Popular"></label>
+          <label>Capacity<input id="productCapacity" placeholder="3kVA"></label>
+          <label>Sort order<input id="productSort" type="number" value="100"></label>
+          <label class="check-label"><input id="productActive" type="checkbox" checked> Show on website</label>
+          <div class="form-actions"><button type="submit" class="primary-btn">Save Product</button><button type="button" id="cancelProduct" class="secondary-btn">Cancel</button></div>
+        </form>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table products-table">
+          <thead><tr><th>Product</th><th>Type</th><th>Current Price</th><th>Visible</th><th>Action</th></tr></thead>
+          <tbody id="productsBody"><tr><td colspan="5" class="empty">Loading products...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="requestModal" class="modal hidden">
+    <div class="modal-card">
+      <button class="modal-close" id="closeModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      <div id="requestDetails"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>
