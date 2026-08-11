@@ -34,11 +34,61 @@ function goAfterLogin() {
 function showLogin() {
   document.getElementById("loginForm").classList.remove("hidden");
   document.getElementById("signupForm").classList.add("hidden");
+  document.getElementById("forgotPasswordForm").classList.add("hidden");
 }
 
 function showSignup() {
   document.getElementById("signupForm").classList.remove("hidden");
   document.getElementById("loginForm").classList.add("hidden");
+  document.getElementById("forgotPasswordForm").classList.add("hidden");
+}
+
+function showForgotPassword() {
+  document.getElementById("forgotPasswordForm").classList.remove("hidden");
+  document.getElementById("loginForm").classList.add("hidden");
+  document.getElementById("signupForm").classList.add("hidden");
+
+  const email = document.getElementById("loginEmail").value.trim();
+  const resetEmail = document.getElementById("resetEmail");
+
+  if (email && resetEmail && !resetEmail.value) {
+    resetEmail.value = email;
+  }
+}
+
+async function sendPasswordReset() {
+  const email = document.getElementById("resetEmail").value.trim();
+  const message = document.getElementById("resetMessage");
+
+  message.className = "auth-message";
+
+  if (!email) {
+    message.classList.add("error");
+    message.textContent = "Please enter your email address.";
+    return;
+  }
+
+  message.textContent = "Sending reset link...";
+
+  const redirectTo =
+    window.location.origin + "/reset-password.html";
+
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(
+    email,
+    { redirectTo }
+  );
+
+  if (error) {
+    message.classList.add("error");
+    message.textContent =
+      error.message || "Unable to send the password reset email.";
+    console.error(error);
+    return;
+  }
+
+  message.classList.add("success");
+  message.textContent =
+    "Reset link sent. Please check your email, including your spam folder.";
 }
 
 async function loginUser() {
