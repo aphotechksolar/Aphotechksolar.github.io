@@ -119,7 +119,7 @@ function renderProducts() {
     <td>${p.category === "package" ? "Solar Package" : "Appliance"}</td>
     <td>${money(p.price)}</td>
     <td>${p.active ? "Yes" : "No"}</td>
-    <td><button class="small-btn edit-product" data-id="${p.id}">Edit</button></td>
+    <td><button class="small-btn edit-product" data-id="${p.id}">Edit</button> <button class="small-btn danger-small delete-product" data-id="${p.id}">Delete</button></td>
   </tr>`).join("");
 }
 
@@ -137,6 +137,17 @@ async function saveProduct(e) {
   flash(id ? "Product updated." : "Product added."); $("productFormWrap").classList.add("hidden"); $("productForm").reset(); $("productActive").checked = true; await loadProducts();
 }
 
+
+async function deleteProduct(id) {
+  const product = allProducts.find(p => p.id == id);
+  if (!product) return;
+  if (!confirm(`Delete "${product.name}"? This cannot be undone.`)) return;
+  const { error } = await adminClient.from("products").delete().eq("id", id);
+  if (error) { flash(error.message || "Could not delete product.", "error"); return; }
+  flash("Product deleted.");
+  await loadProducts();
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   if (!await requireAdmin()) return;
   await Promise.all([loadRequests(), loadProducts()]);
@@ -150,6 +161,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   $("requestModal").addEventListener("click", e => { if (e.target.id === "requestModal") $("requestModal").classList.add("hidden"); });
   $("requestsBody").addEventListener("change", e => { if (e.target.dataset.id) updateRequest(e.target.dataset.id, e.target.dataset.field, e.target.value); });
   $("requestsBody").addEventListener("click", e => { if (e.target.classList.contains("view-request")) openRequest(e.target.dataset.id); });
-  $("productsBody").addEventListener("click", e => { if (e.target.classList.contains("edit-product")) fillProductForm(allProducts.find(p => p.id == e.target.dataset.id)); });
+  $("productsBody").addEventListener("click", e => {
+    if (e.target.classList.contains("edit-product")) fillProductForm(allProducts.find(p => p.id == e.target.dataset.id));
+    if (e.target.classList.contains("delete-product")) deleteProduct(e.target.dataset.id);
+  });
   document.addEventListener("click", e => { if (e.target.id === "saveNotes") saveNotes(e.target.dataset.id); });
 });

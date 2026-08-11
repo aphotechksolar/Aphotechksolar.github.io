@@ -38,7 +38,7 @@ async function loadDashboard() {
 
   const { data: profile, error: profileError } = await supabaseClient
     .from("profiles")
-    .select("full_name,phone,state,email,created_at")
+    .select("full_name,phone,state,email,role,created_at")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -46,8 +46,13 @@ async function loadDashboard() {
     full_name: fallbackName,
     phone: meta.phone || "",
     state: meta.state || "",
-    email: user.email || ""
+    email: user.email || "",
+    role: "customer"
   };
+
+  if (actualProfile.role === "admin") {
+    document.getElementById("adminDashboardAction")?.classList.remove("hidden");
+  }
 
   document.getElementById("welcomeName").textContent =
     actualProfile.full_name || fallbackName;
