@@ -7,16 +7,15 @@ In Supabase SQL Editor, run these files in this order:
 2. `supabase/quote_requests.sql` (if not already done)
 3. `supabase/admin-upgrade.sql`
 
-## 2. Make your account an administrator
-After signing in to the website with your owner/admin email, run this in Supabase SQL Editor:
+## 2. Make the owner accounts administrators
+Run `supabase/make-admin.sql` in the Supabase SQL Editor.
 
-```sql
-update public.profiles
-set role = 'admin'
-where email = 'YOUR-ADMIN-EMAIL@example.com';
-```
+It sets these registered owner accounts to `admin`:
 
-Replace the example email with the email you actually use for the Aphotech admin account.
+- `oloyedeafo1997@gmail.com`
+- `aphotechsolar@gmail.com`
+
+The script also returns both rows so you can confirm that their role is `admin`.
 
 ## 3. Admin page
 Open:
@@ -35,5 +34,6 @@ Only accounts whose `profiles.role` is `admin` can access it. Database RLS also 
 - Turn products on/off
 - Add new products
 - Delete products
+- Admin Dashboard link appears automatically in My Account for admin users
 
 The public Packages page reads active products from Supabase, so price changes appear there after refresh/deployment-independent database update.
