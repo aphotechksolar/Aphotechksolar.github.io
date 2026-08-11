@@ -46,3 +46,5 @@
 .empty-state i{font-size:2rem;color:#b9c8bf;margin-bottom:8px}
 @media(max-width:800px){.account-grid{grid-template-columns:1fr}.account-hero{flex-direction:column;align-items:flex-start}.account-hero-button{width:100%}}
 @media(max-width:520px){.account-main{padding:16px 10px 45px}.account-hero{padding:22px 18px;border-radius:15px}.dashboard-card{padding:16px}.profile-data{grid-template-columns:1fr}.request-top{align-items:flex-start;flex-direction:column}.request-heading .secondary-action{width:100%}}
+
+.hidden{display:none!important}.admin-dashboard-action{margin:0 0 12px}.admin-dashboard-action .secondary-action{background:#e9f8ef;color:#087f40;border:1px solid #bfe9cf}
