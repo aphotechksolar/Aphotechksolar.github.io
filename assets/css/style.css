@@ -2442,3 +2442,19 @@ body::before {
   }
 
 }
+
+/* Public project media */
+#projectsGrid .project-img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+}
+#projectsGrid video.project-img {
+  background: #111;
+}
+#projectsGrid .project-media-error,
+#projectsGrid .project-media-missing {
+  margin-top: .5rem;
+  font-size: .9rem;
+}
