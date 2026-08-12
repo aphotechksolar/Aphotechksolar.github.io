@@ -102,35 +102,90 @@
 <script>
 const PROJECTS_SUPABASE_URL = "https://xeyuuydojhlhpsdvkfcj.supabase.co";
 const PROJECTS_SUPABASE_KEY = "sb_publishable_3AgCAUJYvcN4w7hSC3bS9Q_eR2VsIWN";
-const projectsClient = supabase.createClient(PROJECTS_SUPABASE_URL, PROJECTS_SUPABASE_KEY);
+
+function escapeProjectText(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[c]));
+}
+
+function renderProjectMedia(project) {
+  const url = String(project.media_url || "").trim();
+  if (!url) return '<div class="project-media-missing">Media unavailable</div>';
+  const safeUrl = escapeProjectText(url);
+  if (String(project.media_type).toLowerCase() === "video") {
+    const poster = project.thumbnail_url ? ` poster="${escapeProjectText(project.thumbnail_url)}"` : "";
+    return `<video class="project-img" controls preload="metadata" playsinline${poster}><source src="${safeUrl}">Your browser does not support video playback.</video>`;
+  }
+  return `<img src="${safeUrl}" alt="${escapeProjectText(project.title || "Solar project")}" class="project-img" loading="lazy" onerror="this.closest('.card').querySelector('.project-media-error').hidden=false">`+
+         `<p class="project-media-error" hidden>Project image could not be loaded.</p>`;
+}
+
+function renderProjects(data) {
+  const grid = document.getElementById("projectsGrid");
+  if (!Array.isArray(data) || data.length === 0) {
+    grid.innerHTML = '<div class="card"><p>Our latest installations will appear here soon.</p></div>';
+    return;
+  }
+  grid.innerHTML = data.map(p => `
+    <article class="card reveal">
+      ${renderProjectMedia(p)}
+      <h3>${escapeProjectText(p.title)}</h3>
+      ${p.location ? `<p>${escapeProjectText(p.location)}</p>` : ""}
+      ${p.description ? `<p>${escapeProjectText(p.description)}</p>` : ""}
+    </article>`).join("");
+  if (window.setupReveal) window.setupReveal();
+}
 
 async function loadPublicProjects() {
   const grid = document.getElementById("projectsGrid");
-  const { data, error } = await projectsClient
-    .from("projects")
-    .select("id,title,location,description,media_type,media_url,thumbnail_url,active,sort_order,created_at")
-    .eq("active", true)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: false });
-  if (error) {
-    console.error("Projects load error:", error);
-    grid.innerHTML = '<div class="card"><p>Projects are temporarily unavailable. Please try again shortly.</p></div>';
-    return;
+  try {
+    const params = new URLSearchParams({
+      select: "id,title,location,description,media_type,media_url,thumbnail_url,active,sort_order,created_at",
+      active: "eq.true",
+      order: "sort_order.asc,created_at.desc"
+    });
+    const response = await fetch(`${PROJECTS_SUPABASE_URL}/rest/v1/projects?${params.toString()}`, {
+      method: "GET",
+      headers: {
+        "apikey": PROJECTS_SUPABASE_KEY,
+        "Authorization": `Bearer ${PROJECTS_SUPABASE_KEY}`,
+        "Accept": "application/json"
+      },
+      cache: "no-store"
+    });
+    const raw = await response.text();
+    let data;
+    try { data = raw ? JSON.parse(raw) : []; } catch (_) { data = null; }
+    if (!response.ok) {
+      console.error("Projects REST error", response.status, raw);
+      throw new Error(`Projects request failed (${response.status}).`);
+    }
+    renderProjects(data);
+  } catch (restError) {
+    console.error("Projects REST load failed:", restError);
+    // Fallback to the Supabase JS client when available.
+    try {
+      if (window.supabase?.createClient) {
+        const client = window.supabase.createClient(PROJECTS_SUPABASE_URL, PROJECTS_SUPABASE_KEY);
+        const result = await client.from("projects")
+          .select("id,title,location,description,media_type,media_url,thumbnail_url,active,sort_order,created_at")
+          .eq("active", true)
+          .order("sort_order", {ascending:true})
+          .order("created_at", {ascending:false});
+        if (!result.error) {
+          renderProjects(result.data || []);
+          return;
+        }
+        console.error("Projects JS client error:", result.error);
+      }
+    } catch (fallbackError) {
+      console.error("Projects fallback failed:", fallbackError);
+    }
+    grid.innerHTML = `<div class="card"><p>Projects could not be loaded right now.</p><small>Please refresh the page. If the problem continues, contact Aphotech Solar.</small></div>`;
   }
-  if (!data || !data.length) { grid.innerHTML = '<div class="card"><p>Our latest installations will appear here soon.</p></div>'; return; }
-  grid.innerHTML = data.map(p => {
-    const title = String(p.title || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const loc = String(p.location || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const desc = String(p.description || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const mediaUrl = String(p.media_url || "").replace(/"/g, '&quot;');
-    const poster = String(p.thumbnail_url || "").replace(/"/g, '&quot;');
-    const media = p.media_type === 'video'
-      ? `<video class="project-img" controls preload="metadata" playsinline ${poster ? `poster="${poster}"` : ''}><source src="${mediaUrl}"></video>`
-      : `<img src="${mediaUrl}" alt="${title}" class="project-img" loading="lazy">`;
-    return `<div class="card reveal">${media}<h3>${title}</h3>${loc ? `<p>${loc}</p>` : ''}${desc ? `<p>${desc}</p>` : ''}</div>`;
-  }).join('');
-  if (window.setupReveal) window.setupReveal();
 }
+
 loadPublicProjects();
 </script>
 
