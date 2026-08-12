@@ -104,7 +104,16 @@ const PROJECTS_SUPABASE_URL = "https://xeyuuydojhlhpsdvkfcj.supabase.co";
 const PROJECTS_SUPABASE_KEY = "sb_publishable_3AgCAUJYvcN4w7hSC3bS9Q_eR2VsIWN";
 
 function escapeProjectText(value) {
-  return String(value ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",\"":"&quot;","'":"&#39;"}[c]));
+  return String(value ?? "").replace(/[&<>"']/g, function (c) {
+    switch (c) {
+      case "&": return "&amp;";
+      case "<": return "&lt;";
+      case ">": return "&gt;";
+      case "\"": return "&quot;";
+      case "'": return "&#39;";
+      default: return c;
+    }
+  });
 }
 
 function renderProjectMedia(project) {
