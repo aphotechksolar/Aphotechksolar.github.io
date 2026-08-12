@@ -201,13 +201,34 @@ function fillProjectForm(p) {
   document.getElementById("projectsPanel").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
+function createCompatibleUUID() {
+  if (window.crypto && typeof window.crypto.randomUUID === "function") {
+    return window.crypto.randomUUID();
+  }
+  if (window.crypto && typeof window.crypto.getRandomValues === "function") {
+    const bytes = new Uint8Array(16);
+    window.crypto.getRandomValues(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    return Array.from(bytes, (b, i) => {
+      const h = b.toString(16).padStart(2, "0");
+      return ([4, 6, 8, 10].includes(i) ? "-" : "") + h;
+    }).join("");
+  }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 function makeSafeFileName(name) {
   return name.toLowerCase().replace(/[^a-z0-9._-]+/g, "-").replace(/-+/g, "-");
 }
 
 async function uploadProjectMedia(file, projectId) {
   const ext = (file.name.split(".").pop() || "bin").toLowerCase();
-  const path = `${crypto.randomUUID()}-${makeSafeFileName(file.name)}`;
+  const path = `${createCompatibleUUID()}-${makeSafeFileName(file.name)}`;
   const { error: uploadError } = await adminClient.storage.from("project-media").upload(path, file, {upsert:false, contentType:file.type || undefined});
   if (uploadError) throw uploadError;
   const { data } = adminClient.storage.from("project-media").getPublicUrl(path);
@@ -234,7 +255,7 @@ async function saveProject(e) {
     if (!mediaUrl) mediaUrl = $("projectExistingMediaUrl").value.trim();
     if (file) {
       flash("Uploading media...", "success");
-      mediaUrl = await uploadProjectMedia(file, id || crypto.randomUUID());
+      mediaUrl = await uploadProjectMedia(file, id || createCompatibleUUID());
     }
     if (!mediaUrl) throw new Error("Please upload a file or enter a media URL.");
     const payload = {title, location:$("projectLocation").value.trim() || null, description:$("projectDescription").value.trim() || null, media_type:mediaType, media_url:mediaUrl, thumbnail_url:mediaType === "image" ? mediaUrl : null, active:$("projectActive").checked, sort_order:Number($("projectSort").value || 100)};
