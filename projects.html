@@ -59,43 +59,8 @@
 <section class="section gray">
   <div class="container">
     <h2 class="reveal">Completed Installations</h2>
-
-    <div class="grid">
-      <!-- PROJECT 1 -->
-      <div class="card reveal">
-        <img src="assets/images/projects/project1.jpg" 
-             alt="3kVA Solar Installation" 
-             class="project-img">
-        <h3>3kVA Residential System</h3>
-        <p>Abeokuta, Ogun State</p>
-      </div>
-
-      <!-- PROJECT 2 -->
-      <div class="card reveal">
-        <img src="assets/images/projects/project2.jpg" 
-             alt="5kVA Solar Installation" 
-             class="project-img">
-        <h3>8kVA Home Backup</h3>
-        <p>Ifo, Ogun State</p>
-      </div>
-
-      <!-- PROJECT 3 -->
-      <div class="card reveal">
-        <img src="assets/images/projects/project3.jpg" 
-             alt="10kVA Office Solar Installation" 
-             class="project-img">
-        <h3>10kVA Office System</h3>
-        <p>Lagos</p>
-      </div>
-
-      <!-- ADD MORE PROJECTS BELOW -->
-      <!--
-      <div class="card reveal">
-        <img src="assets/images/projects/project4.jpg" class="project-img">
-        <h3>Project Title</h3>
-        <p>Location</p>
-      </div>
-      -->
+    <div id="projectsGrid" class="grid">
+      <div class="card"><p>Loading projects...</p></div>
     </div>
   </div>
 </section>
@@ -135,6 +100,28 @@
 </a>
 
 <!-- JS -->
+<script>
+const PROJECTS_SUPABASE_URL = "https://xeyuuydojhlhpsdvkfcj.supabase.co";
+const PROJECTS_SUPABASE_KEY = "sb_publishable_3AgCAUJYvcN4w7hSC3bS9Q_eR2VsIWN";
+const projectsClient = supabase.createClient(PROJECTS_SUPABASE_URL, PROJECTS_SUPABASE_KEY);
+
+async function loadPublicProjects() {
+  const grid = document.getElementById("projectsGrid");
+  const { data, error } = await projectsClient.from("projects").select("*").eq("active", true).order("sort_order").order("created_at", {ascending:false});
+  if (error) { grid.innerHTML = '<div class="card"><p>Projects are temporarily unavailable.</p></div>'; return; }
+  if (!data || !data.length) { grid.innerHTML = '<div class="card"><p>Our latest installations will appear here soon.</p></div>'; return; }
+  grid.innerHTML = data.map(p => {
+    const title = String(p.title || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const loc = String(p.location || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const desc = String(p.description || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const media = p.media_type === 'video' ? `<video class="project-img" controls preload="metadata" playsinline poster="${p.thumbnail_url || ''}"><source src="${p.media_url}"></video>` : `<img src="${p.media_url}" alt="${title}" class="project-img" loading="lazy">`;
+    return `<div class="card reveal">${media}<h3>${title}</h3>${loc ? `<p>${loc}</p>` : ''}${desc ? `<p>${desc}</p>` : ''}</div>`;
+  }).join('');
+  if (window.setupReveal) window.setupReveal();
+}
+loadPublicProjects();
+</script>
+
 <script src="assets/js/main.js"></script>
 
 </body>

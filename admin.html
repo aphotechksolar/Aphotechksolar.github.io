@@ -86,6 +86,35 @@
         </table>
       </div>
     </section>
+    <section class="panel" id="projectsPanel">
+      <div class="panel-heading">
+        <div><h2><i class="fa-solid fa-images"></i> Projects & Media</h2><p>Add, edit, hide or remove project photos and videos shown on the public Projects page.</p></div>
+        <button id="showAddProject" class="secondary-btn"><i class="fa-solid fa-plus"></i> Add Project</button>
+      </div>
+      <div id="projectFormWrap" class="product-form-wrap hidden">
+        <form id="projectForm" class="product-form">
+          <input type="hidden" id="projectId">
+          <input type="hidden" id="projectExistingMediaUrl">
+          <label>Project title<input id="projectTitle" required placeholder="3kVA Residential Installation"></label>
+          <label>Location<input id="projectLocation" placeholder="Abeokuta, Ogun State"></label>
+          <label>Description<textarea id="projectDescription" rows="3" placeholder="Briefly describe the installation."></textarea></label>
+          <label>Media type<select id="projectMediaType"><option value="image">Image</option><option value="video">Video</option></select></label>
+          <label>Upload image/video<input id="projectMediaFile" type="file" accept="image/*,video/*"></label>
+          <p class="form-help">For videos, MP4/WebM works best. Large videos may take longer to upload.</p>
+          <label>Or use a media URL<input id="projectMediaUrl" type="url" placeholder="https://..."></label>
+          <label>Sort order<input id="projectSort" type="number" value="100"></label>
+          <label class="check-label"><input id="projectActive" type="checkbox" checked> Show on Projects page</label>
+          <div class="form-actions"><button type="submit" class="primary-btn">Save Project</button><button type="button" id="cancelProject" class="secondary-btn">Cancel</button></div>
+        </form>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table projects-admin-table">
+          <thead><tr><th>Media</th><th>Project</th><th>Type</th><th>Visible</th><th>Action</th></tr></thead>
+          <tbody id="projectsBody"><tr><td colspan="5" class="empty">Loading projects...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
   </main>
 
   <div id="requestModal" class="modal hidden">
