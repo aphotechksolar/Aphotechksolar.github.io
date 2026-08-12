@@ -159,11 +159,124 @@ async function deleteProduct(id) {
   await loadProducts();
 }
 
+
+let allProjects = [];
+
+async function loadProjects() {
+  const { data, error } = await adminClient.from("projects").select("*").order("sort_order").order("created_at", {ascending:false});
+  if (error) { flash(error.message || "Unable to load projects. Run projects-media.sql first.", "error"); return; }
+  allProjects = data || [];
+  renderProjects();
+}
+
+function renderProjects() {
+  const body = $("projectsBody");
+  if (!allProjects.length) { body.innerHTML = `<tr><td colspan="5" class="empty">No projects yet. Add your first project above.</td></tr>`; return; }
+  body.innerHTML = allProjects.map(p => {
+    const thumb = p.thumbnail_url || p.media_url;
+    const preview = p.media_type === "video" ? `<video src="${esc(p.media_url)}" muted preload="metadata"></video>` : `<img src="${esc(thumb)}" alt="${esc(p.title)}">`;
+    return `<tr>
+      <td><div class="project-admin-thumb">${preview}</div></td>
+      <td><strong>${esc(p.title)}</strong><span class="subtext">${esc(p.location || "")}</span></td>
+      <td>${p.media_type === "video" ? "Video" : "Image"}</td>
+      <td><span class="visibility-pill ${p.active ? "is-active" : "is-hidden"}">${p.active ? "Visible" : "Hidden"}</span></td>
+      <td class="product-actions"><button class="small-btn edit-project" data-id="${p.id}"><i class="fa-solid fa-pen-to-square"></i> Edit</button> <button class="small-btn toggle-project" data-id="${p.id}">${p.active ? '<i class="fa-solid fa-eye-slash"></i> Hide' : '<i class="fa-solid fa-eye"></i> Show'}</button> <button class="small-btn danger-small delete-project" data-id="${p.id}"><i class="fa-solid fa-trash"></i> Delete</button></td>
+    </tr>`;
+  }).join("");
+}
+
+function fillProjectForm(p) {
+  $("projectId").value = p?.id || "";
+  $("projectExistingMediaUrl").value = p?.media_url || "";
+  $("projectTitle").value = p?.title || "";
+  $("projectLocation").value = p?.location || "";
+  $("projectDescription").value = p?.description || "";
+  $("projectMediaType").value = p?.media_type || "image";
+  $("projectMediaUrl").value = p?.media_url && !p.media_url.includes("project-media") ? p.media_url : "";
+  $("projectSort").value = p?.sort_order ?? 100;
+  $("projectActive").checked = p ? !!p.active : true;
+  $("projectMediaFile").value = "";
+  $("projectFormWrap").classList.remove("hidden");
+  document.getElementById("projectsPanel").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function makeSafeFileName(name) {
+  return name.toLowerCase().replace(/[^a-z0-9._-]+/g, "-").replace(/-+/g, "-");
+}
+
+async function uploadProjectMedia(file, projectId) {
+  const ext = (file.name.split(".").pop() || "bin").toLowerCase();
+  const path = `${crypto.randomUUID()}-${makeSafeFileName(file.name)}`;
+  const { error: uploadError } = await adminClient.storage.from("project-media").upload(path, file, {upsert:false, contentType:file.type || undefined});
+  if (uploadError) throw uploadError;
+  const { data } = adminClient.storage.from("project-media").getPublicUrl(path);
+  return data.publicUrl;
+}
+
+async function saveProject(e) {
+  e.preventDefault();
+  const id = $("projectId").value;
+  const title = $("projectTitle").value.trim();
+  if (!title) return flash("Project title is required.", "error");
+  const file = $("projectMediaFile").files[0];
+  const mediaType = $("projectMediaType").value;
+  if (file) {
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+    if ((mediaType === "image" && !isImage) || (mediaType === "video" && !isVideo)) return flash("The selected file does not match the media type.", "error");
+  }
+  const button = $("projectForm").querySelector('button[type="submit"]');
+  button.disabled = true;
+  button.textContent = "Saving...";
+  try {
+    let mediaUrl = $("projectMediaUrl").value.trim();
+    if (!mediaUrl) mediaUrl = $("projectExistingMediaUrl").value.trim();
+    if (file) {
+      flash("Uploading media...", "success");
+      mediaUrl = await uploadProjectMedia(file, id || crypto.randomUUID());
+    }
+    if (!mediaUrl) throw new Error("Please upload a file or enter a media URL.");
+    const payload = {title, location:$("projectLocation").value.trim() || null, description:$("projectDescription").value.trim() || null, media_type:mediaType, media_url:mediaUrl, thumbnail_url:mediaType === "image" ? mediaUrl : null, active:$("projectActive").checked, sort_order:Number($("projectSort").value || 100)};
+    const result = id ? await adminClient.from("projects").update(payload).eq("id", id) : await adminClient.from("projects").insert(payload);
+    if (result.error) throw result.error;
+    flash(id ? "Project updated." : "Project added.");
+    $("projectForm").reset(); $("projectId").value=""; $("projectExistingMediaUrl").value=""; $("projectActive").checked=true; $("projectFormWrap").classList.add("hidden");
+    await loadProjects();
+  } catch (err) {
+    flash(err.message || "Could not save project.", "error");
+  } finally {
+    button.disabled = false; button.textContent = "Save Project";
+  }
+}
+
+async function toggleProject(id) {
+  const project = allProjects.find(p => p.id == id); if (!project) return;
+  const next = !project.active;
+  if (!confirm(`${next ? "Show" : "Hide"} "${project.title}" on the public Projects page?`)) return;
+  const { error } = await adminClient.from("projects").update({active:next}).eq("id", id);
+  if (error) return flash(error.message || "Could not update project visibility.", "error");
+  flash(next ? "Project is now visible." : "Project hidden."); await loadProjects();
+}
+
+async function deleteProject(id) {
+  const project = allProjects.find(p => p.id == id); if (!project) return;
+  if (!confirm(`Delete "${project.title}" and remove its database record? This cannot be undone.`)) return;
+  const { error } = await adminClient.from("projects").delete().eq("id", id);
+  if (error) return flash(error.message || "Could not delete project.", "error");
+  // Also remove uploaded storage media when it belongs to our bucket.
+  try {
+    const marker = "/storage/v1/object/public/project-media/";
+    const index = project.media_url.indexOf(marker);
+    if (index >= 0) await adminClient.storage.from("project-media").remove([decodeURIComponent(project.media_url.slice(index + marker.length))]);
+  } catch (_) {}
+  flash("Project deleted."); await loadProjects();
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   if (!await requireAdmin()) return;
-  await Promise.all([loadRequests(), loadProducts()]);
+  await Promise.all([loadRequests(), loadProducts(), loadProjects()]);
   $("statusFilter").addEventListener("change", renderRequests);
-  $("refreshAll").addEventListener("click", () => Promise.all([loadRequests(), loadProducts()]));
+  $("refreshAll").addEventListener("click", () => Promise.all([loadRequests(), loadProducts(), loadProjects()]));
   $("logoutBtn").addEventListener("click", async () => { await adminClient.auth.signOut(); location.replace("auth.html"); });
   $("showAddProduct").addEventListener("click", () => { $("productForm").reset(); $("productId").value=""; $("productActive").checked=true; fillProductForm(); });
   $("cancelProduct").addEventListener("click", () => $("productFormWrap").classList.add("hidden"));
@@ -176,6 +289,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (e.target.closest(".edit-product")) fillProductForm(allProducts.find(p => p.id == e.target.closest(".edit-product").dataset.id));
     if (e.target.closest(".toggle-product")) toggleProduct(e.target.closest(".toggle-product").dataset.id);
     if (e.target.closest(".delete-product")) deleteProduct(e.target.closest(".delete-product").dataset.id);
+  });
+  $("showAddProject").addEventListener("click", () => { $("projectForm").reset(); $("projectId").value=""; $("projectExistingMediaUrl").value=""; $("projectActive").checked=true; fillProjectForm(); });
+  $("cancelProject").addEventListener("click", () => $("projectFormWrap").classList.add("hidden"));
+  $("projectForm").addEventListener("submit", saveProject);
+  $("projectsBody").addEventListener("click", e => {
+    const edit=e.target.closest(".edit-project"), toggle=e.target.closest(".toggle-project"), del=e.target.closest(".delete-project");
+    if(edit) fillProjectForm(allProjects.find(p => p.id == edit.dataset.id));
+    if(toggle) toggleProject(toggle.dataset.id);
+    if(del) deleteProject(del.dataset.id);
   });
   document.addEventListener("click", e => { if (e.target.id === "saveNotes") saveNotes(e.target.dataset.id); });
 });
