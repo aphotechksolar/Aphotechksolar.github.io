@@ -27,8 +27,7 @@
 </head>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="assets/js/auth-guard.js"></script>
-  
+
 <body>
 
 <!-- ===== HEADER ===== -->
@@ -107,14 +106,27 @@ const projectsClient = supabase.createClient(PROJECTS_SUPABASE_URL, PROJECTS_SUP
 
 async function loadPublicProjects() {
   const grid = document.getElementById("projectsGrid");
-  const { data, error } = await projectsClient.from("projects").select("*").eq("active", true).order("sort_order").order("created_at", {ascending:false});
-  if (error) { grid.innerHTML = '<div class="card"><p>Projects are temporarily unavailable.</p></div>'; return; }
+  const { data, error } = await projectsClient
+    .from("projects")
+    .select("id,title,location,description,media_type,media_url,thumbnail_url,active,sort_order,created_at")
+    .eq("active", true)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.error("Projects load error:", error);
+    grid.innerHTML = '<div class="card"><p>Projects are temporarily unavailable. Please try again shortly.</p></div>';
+    return;
+  }
   if (!data || !data.length) { grid.innerHTML = '<div class="card"><p>Our latest installations will appear here soon.</p></div>'; return; }
   grid.innerHTML = data.map(p => {
     const title = String(p.title || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const loc = String(p.location || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const desc = String(p.description || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const media = p.media_type === 'video' ? `<video class="project-img" controls preload="metadata" playsinline poster="${p.thumbnail_url || ''}"><source src="${p.media_url}"></video>` : `<img src="${p.media_url}" alt="${title}" class="project-img" loading="lazy">`;
+    const mediaUrl = String(p.media_url || "").replace(/"/g, '&quot;');
+    const poster = String(p.thumbnail_url || "").replace(/"/g, '&quot;');
+    const media = p.media_type === 'video'
+      ? `<video class="project-img" controls preload="metadata" playsinline ${poster ? `poster="${poster}"` : ''}><source src="${mediaUrl}"></video>`
+      : `<img src="${mediaUrl}" alt="${title}" class="project-img" loading="lazy">`;
     return `<div class="card reveal">${media}<h3>${title}</h3>${loc ? `<p>${loc}</p>` : ''}${desc ? `<p>${desc}</p>` : ''}</div>`;
   }).join('');
   if (window.setupReveal) window.setupReveal();
