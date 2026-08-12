@@ -118,8 +118,8 @@ function renderProducts() {
     <td><strong>${esc(p.name)}</strong><span class="subtext">${esc(p.description || "")}</span></td>
     <td>${p.category === "package" ? "Solar Package" : "Appliance"}</td>
     <td>${money(p.price)}</td>
-    <td>${p.active ? "Yes" : "No"}</td>
-    <td><button class="small-btn edit-product" data-id="${p.id}">Edit</button> <button class="small-btn danger-small delete-product" data-id="${p.id}">Delete</button></td>
+    <td><span class="visibility-pill ${p.active ? "is-active" : "is-hidden"}">${p.active ? "Visible" : "Hidden"}</span></td>
+    <td class="product-actions"><button class="small-btn edit-product" data-id="${p.id}"><i class="fa-solid fa-pen-to-square"></i> Edit</button> <button class="small-btn toggle-product" data-id="${p.id}">${p.active ? '<i class="fa-solid fa-eye-slash"></i> Hide' : '<i class="fa-solid fa-eye"></i> Show'}</button> <button class="small-btn danger-small delete-product" data-id="${p.id}"><i class="fa-solid fa-trash"></i> Delete</button></td>
   </tr>`).join("");
 }
 
@@ -137,6 +137,17 @@ async function saveProduct(e) {
   flash(id ? "Product updated." : "Product added."); $("productFormWrap").classList.add("hidden"); $("productForm").reset(); $("productActive").checked = true; await loadProducts();
 }
 
+
+async function toggleProduct(id) {
+  const product = allProducts.find(p => p.id == id);
+  if (!product) return;
+  const next = !product.active;
+  if (!confirm(`${next ? "Show" : "Hide"} "${product.name}" on the public Packages page?`)) return;
+  const { error } = await adminClient.from("products").update({ active: next }).eq("id", id);
+  if (error) { flash(error.message || "Could not update product visibility.", "error"); return; }
+  flash(next ? "Product is now visible." : "Product hidden from the public website.");
+  await loadProducts();
+}
 
 async function deleteProduct(id) {
   const product = allProducts.find(p => p.id == id);
@@ -162,8 +173,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   $("requestsBody").addEventListener("change", e => { if (e.target.dataset.id) updateRequest(e.target.dataset.id, e.target.dataset.field, e.target.value); });
   $("requestsBody").addEventListener("click", e => { if (e.target.classList.contains("view-request")) openRequest(e.target.dataset.id); });
   $("productsBody").addEventListener("click", e => {
-    if (e.target.classList.contains("edit-product")) fillProductForm(allProducts.find(p => p.id == e.target.dataset.id));
-    if (e.target.classList.contains("delete-product")) deleteProduct(e.target.dataset.id);
+    if (e.target.closest(".edit-product")) fillProductForm(allProducts.find(p => p.id == e.target.closest(".edit-product").dataset.id));
+    if (e.target.closest(".toggle-product")) toggleProduct(e.target.closest(".toggle-product").dataset.id);
+    if (e.target.closest(".delete-product")) deleteProduct(e.target.closest(".delete-product").dataset.id);
   });
   document.addEventListener("click", e => { if (e.target.id === "saveNotes") saveNotes(e.target.dataset.id); });
 });
