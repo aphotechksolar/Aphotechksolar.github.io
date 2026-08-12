@@ -4,3 +4,12 @@
 .danger-small{background:#fff1f1;color:#b42318}.danger-small:hover{background:#ffe1e1}
 
 .visibility-pill{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:800}.visibility-pill.is-active{background:#e7f7ee;color:#087f40}.visibility-pill.is-hidden{background:#fff1f1;color:#b42318}.product-actions{white-space:nowrap}.product-actions .small-btn{margin:2px}.small-btn{display:inline-flex;align-items:center;gap:5px}
+
+
+/* Projects media manager */
+.form-help { margin:-6px 0 4px; font-size:.82rem; opacity:.75; }
+.product-form textarea { width:100%; resize:vertical; }
+.project-admin-thumb { width:90px; height:64px; overflow:hidden; border-radius:8px; background:#eee; }
+.project-admin-thumb img, .project-admin-thumb video { width:100%; height:100%; object-fit:cover; display:block; }
+.projects-admin-table .product-actions { white-space:nowrap; }
+@media (max-width:700px){ .projects-admin-table .product-actions { white-space:normal; } .project-admin-thumb { width:70px; height:52px; } }
