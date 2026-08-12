@@ -59,7 +59,23 @@
   <div class="container">
     <h2 class="reveal">Completed Installations</h2>
     <div id="projectsGrid" class="grid">
-      <div class="card"><p>Loading projects...</p></div>
+      <!-- Existing website projects are kept here as legacy/static projects.
+           New projects added from Admin Dashboard are loaded from Supabase below. -->
+      <article class="card project-card legacy-project">
+        <img src="assets/images/projects/project1.jpg" alt="Aphotech Solar project" class="project-img" loading="lazy">
+        <h3>Solar Installation Project</h3>
+        <p>Completed solar installation by Aphotech Solar Solution.</p>
+      </article>
+      <article class="card project-card legacy-project">
+        <img src="assets/images/projects/project2.jpg" alt="Aphotech Solar project" class="project-img" loading="lazy">
+        <h3>Solar Installation Project</h3>
+        <p>Completed solar installation by Aphotech Solar Solution.</p>
+      </article>
+      <article class="card project-card legacy-project">
+        <img src="assets/images/projects/project3.jpg" alt="Aphotech Solar project" class="project-img" loading="lazy">
+        <h3>Solar Installation Project</h3>
+        <p>Completed solar installation by Aphotech Solar Solution.</p>
+      </article>
     </div>
   </div>
 </section>
@@ -129,19 +145,20 @@ function renderProjectMedia(project) {
 
 function renderProjects(data) {
   const grid = document.getElementById("projectsGrid");
-  if (!Array.isArray(data) || data.length === 0) {
-    grid.innerHTML = '<div class="card"><p>Our latest installations will appear here soon.</p></div>';
-    return;
-  }
-  // Do NOT add the site's .reveal class here. These cards are inserted asynchronously,
-  // after main.js has already initialized its IntersectionObserver.
-  grid.innerHTML = data.map(p => `
+  const existingLegacy = Array.from(grid.querySelectorAll(".legacy-project"));
+  if (!Array.isArray(data)) data = [];
+  // Keep the original GitHub project images and append the projects managed from Admin.
+  // Do NOT replace the legacy cards when Supabase returns an empty list.
+  const dynamicHtml = data.map(p => `
     <article class="card project-card">
       ${renderProjectMedia(p)}
       <h3>${escapeProjectText(p.title)}</h3>
       ${p.location ? `<p>${escapeProjectText(p.location)}</p>` : ""}
       ${p.description ? `<p>${escapeProjectText(p.description)}</p>` : ""}
     </article>`).join("");
+
+  // Keep existing static GitHub projects and append database-managed projects.
+  grid.innerHTML = existingLegacy.map(el => el.outerHTML).join("") + dynamicHtml;
 
   // Add image lightbox handlers after dynamic cards are inserted.
   const lightbox = document.querySelector(".lightbox");
