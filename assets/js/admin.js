@@ -1,3 +1,4 @@
+// Projects public-display compatibility fix v7.1
 const SUPABASE_URL = "https://xeyuuydojhlhpsdvkfcj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_3AgCAUJYvcN4w7hSC3bS9Q_eR2VsIWN";
 const adminClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
