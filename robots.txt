@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://aphotechsolar.name.ng/sitemap.xml￼Enter
+Sitemap: https://aphotechsolar.name.ng/sitemap.xml
