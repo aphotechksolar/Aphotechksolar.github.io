@@ -86,6 +86,37 @@
         </table>
       </div>
     </section>
+    
+    <section class="panel solar-calc-panel" id="solarCalculator">
+      <div class="panel-heading">
+        <div><h2><i class="fa-solid fa-solar-panel"></i> Solar Design &amp; Sizing Calculator</h2><p>Estimate system components from a customer's appliance schedule.</p></div>
+        <span class="visibility-pill is-active">ADMIN TOOL</span>
+      </div>
+      <div class="solar-calc-body">
+        <p class="solar-calc-help">Enter appliance nameplate watts, quantity and expected daily operating hours. Sample rows are illustrative—replace them with the customer's actual loads.</p>
+        <div class="table-wrap">
+          <table class="solar-load-table">
+            <thead><tr><th>Appliance</th><th>Rated W</th><th>Qty</th><th>Hours/day</th><th>Used together %</th><th>Start factor</th><th></th></tr></thead>
+            <tbody id="solarLoadsBody"></tbody>
+          </table>
+        </div>
+        <div class="solar-actions"><button type="button" id="addSolarLoad" class="secondary-btn"><i class="fa-solid fa-plus"></i> Add appliance</button><button type="button" id="clearSolarLoads" class="secondary-btn">Clear loads</button></div>
+        <div class="solar-settings">
+          <label>Battery bank voltage<select id="solarVoltage"><option value="12">12V</option><option value="24">24V</option><option value="48" selected>48V</option></select></label>
+          <label>Battery chemistry<select id="solarBatteryType"><option value="lithium" selected>Lithium (80% DoD)</option><option value="lead">Tubular / lead-acid (50% DoD)</option></select></label>
+          <label>Autonomy (days)<input id="solarAutonomy" type="number" min="0.5" max="5" step="0.5" value="1"></label>
+          <label>Peak sun hours/day<input id="solarSunHours" type="number" min="1" max="8" step="0.5" value="5"></label>
+          <label>Panel rating (W)<input id="solarPanelWatt" type="number" min="50" max="1000" step="10" value="550"></label>
+          <label>PV derating factor<input id="solarDerating" type="number" min="0.5" max="0.95" step="0.01" value="0.75"></label>
+          <label>Battery unit capacity (kWh)<input id="solarBatteryUnit" type="number" min="0.2" max="30" step="0.1" value="5.12"></label>
+          <label>Inverter power factor<input id="solarPowerFactor" type="number" min="0.7" max="1" step="0.05" value="0.8"></label>
+        </div>
+        <div class="solar-actions"><button type="button" class="primary-btn" id="calculateSolar"><i class="fa-solid fa-calculator"></i> Calculate system</button><button type="button" class="secondary-btn" id="printSolar"><i class="fa-solid fa-print"></i> Print results</button></div>
+        <div id="solarResults" class="solar-results" aria-live="polite"><div class="solar-empty">Enter the customer's loads, then calculate the system.</div></div>
+        <p class="solar-calc-warning"><i class="fa-solid fa-triangle-exclamation"></i> Preliminary sizing only. Confirm appliance starting current, inverter surge rating, battery BMS limits, panel Voc/Isc and MPPT window, cable sizing, protection devices, temperature and site conditions before final quotation or installation.</p>
+      </div>
+    </section>
+
     <section class="panel" id="projectsPanel">
       <div class="panel-heading">
         <div><h2><i class="fa-solid fa-images"></i> Projects & Media</h2><p>Add, edit, hide or remove project photos and videos shown on the public Projects page.</p></div>
