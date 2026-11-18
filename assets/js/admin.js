@@ -294,9 +294,94 @@ async function deleteProject(id) {
   flash("Project deleted."); await loadProjects();
 }
 
+
+/* Admin solar sizing calculator */
+function addSolarLoadRow(name="", watts=0, qty=1, hours=1, simultaneous=100, startFactor=1) {
+  const row=document.createElement("tr");
+  row.innerHTML=`<td><input data-solar="name" aria-label="Appliance name" value="${esc(name)}" placeholder="Appliance"></td>
+    <td><input data-solar="watts" aria-label="Rated watts" type="number" min="0" step="1" value="${watts}"></td>
+    <td><input data-solar="qty" aria-label="Quantity" type="number" min="1" step="1" value="${qty}"></td>
+    <td><input data-solar="hours" aria-label="Hours per day" type="number" min="0" max="24" step="0.5" value="${hours}"></td>
+    <td><input data-solar="simultaneous" aria-label="Simultaneous use percent" type="number" min="0" max="100" step="5" value="${simultaneous}"></td>
+    <td><input data-solar="start" aria-label="Starting surge factor" type="number" min="1" max="8" step="0.1" value="${startFactor}"></td>
+    <td><button type="button" class="solar-remove" aria-label="Remove appliance"><i class="fa-solid fa-trash"></i></button></td>`;
+  $("solarLoadsBody").appendChild(row);
+}
+function solarValue(id, fallback) {
+  const value=Number($(id).value);
+  return Number.isFinite(value)?value:fallback;
+}
+function solarNumber(value, digits=1) {
+  return Number(value).toLocaleString("en-NG",{maximumFractionDigits:digits});
+}
+function calculateSolarSystem() {
+  const rows=[...$("solarLoadsBody").querySelectorAll("tr")];
+  const loads=rows.map(row=>{
+    const read=key=>Number(row.querySelector('[data-solar="'+key+'"]').value);
+    return {name:row.querySelector('[data-solar="name"]').value.trim()||"Appliance",watts:read("watts"),qty:read("qty"),hours:read("hours"),simultaneous:read("simultaneous"),start:read("start")};
+  });
+  if(!loads.length || loads.some(x=>x.watts<=0||x.qty<=0||x.hours<0||x.hours>24||x.simultaneous<0||x.simultaneous>100||x.start<1)) {
+    $("solarResults").innerHTML='<div class="solar-empty">Add at least one appliance and check that watts, quantity, hours, usage percentage and starting factor are valid.</div>';
+    return;
+  }
+  const dailyWh=loads.reduce((sum,x)=>sum+x.watts*x.qty*x.hours,0);
+  const runningW=loads.reduce((sum,x)=>sum+x.watts*x.qty*x.simultaneous/100,0);
+  const estimatedSurgeW=loads.reduce((sum,x)=>sum+x.watts*x.qty*x.simultaneous/100*x.start,0);
+  const voltage=solarValue("solarVoltage",48), autonomy=solarValue("solarAutonomy",1);
+  const sun=solarValue("solarSunHours",5), panelW=solarValue("solarPanelWatt",550);
+  const derating=solarValue("solarDerating",0.75), unitKWh=solarValue("solarBatteryUnit",5.12);
+  const pf=solarValue("solarPowerFactor",0.8);
+  if(autonomy<=0||sun<=0||panelW<=0||derating<=0||derating>1||unitKWh<=0||pf<0.7||pf>1) {
+    $("solarResults").innerHTML='<div class="solar-empty">Check settings: values must be positive, derating must be at most 1, and power factor must be 0.7–1.0.</div>';
+    return;
+  }
+  const lithium=$("solarBatteryType").value==="lithium";
+  const dod=lithium?0.8:0.5, batteryEfficiency=lithium?0.95:0.85;
+  const requiredBatteryKWh=dailyWh*autonomy/(1000*dod*batteryEfficiency);
+  const batteryAh=requiredBatteryKWh*1000/voltage;
+  const batteryUnits=Math.ceil(requiredBatteryKWh/unitKWh);
+  const requiredPvW=dailyWh/(sun*derating);
+  const panelCount=Math.ceil(requiredPvW/panelW);
+  const installedPvW=panelCount*panelW;
+  const inverterKVA=Math.ceil((Math.max(runningW,estimatedSurgeW)/pf*1.25)/500)/2;
+  const controllerA=installedPvW/voltage*1.25;
+  const controllerOptions=[20,30,40,50,60,80,100,120,150,200,250,300];
+  const controllerSize=controllerOptions.find(size=>size>=controllerA)||Math.ceil(controllerA/50)*50;
+  const loadRows=loads.map(x=>'<p>'+esc(x.name)+': '+x.qty+' × '+x.watts+' W × '+x.hours+' h = <strong>'+solarNumber(x.watts*x.qty*x.hours,0)+' Wh/day</strong></p>').join("");
+  $("solarResults").innerHTML=`
+    <div class="solar-result-heading"><h3>Preliminary system recommendation</h3><strong>${solarNumber(dailyWh/1000,2)} kWh/day</strong></div>
+    <div class="solar-result-grid">
+      <article class="solar-result-card"><span>Inverter starting point</span><strong>${solarNumber(inverterKVA,1)} kVA</strong><small>Estimated running load ${solarNumber(runningW,0)} W; estimated coincident surge ${solarNumber(estimatedSurgeW,0)} W</small></article>
+      <article class="solar-result-card"><span>Battery bank energy</span><strong>${solarNumber(requiredBatteryKWh,2)} kWh</strong><small>${voltage} V nominal · about ${solarNumber(batteryAh,0)} Ah equivalent · ${batteryUnits} unit(s) by entered unit capacity</small></article>
+      <article class="solar-result-card"><span>Solar array</span><strong>${solarNumber(installedPvW/1000,2)} kWp</strong><small>${panelCount} × ${solarNumber(panelW,0)} W panels; calculated minimum ${solarNumber(requiredPvW,0)} W</small></article>
+      <article class="solar-result-card"><span>MPPT current estimate</span><strong>${solarNumber(controllerSize,0)} A</strong><small>Approx. ${solarNumber(controllerA,1)} A at the selected battery voltage</small></article>
+    </div>
+    <div class="solar-result-details">
+      <section class="solar-detail-box"><h4>Daily energy schedule</h4>${loadRows}<p><strong>Total: ${solarNumber(dailyWh,0)} Wh/day</strong></p></section>
+      <section class="solar-detail-box"><h4>Design assumptions</h4><p>Autonomy: ${autonomy} day(s)</p><p>Battery: ${lithium?"Lithium":"Tubular / lead-acid"} · DoD ${dod*100}% · assumed efficiency ${batteryEfficiency*100}%</p><p>Peak sun hours: ${sun} · PV derating: ${Math.round(derating*100)}%</p><p>Inverter margin: 25% · power factor: ${pf}</p><p>Selected panel total: ${solarNumber(installedPvW,0)} W DC</p></section>
+    </div>
+    <p class="solar-calc-note">Battery unit count is an energy-only estimate. Confirm the actual battery module voltage, series/parallel arrangement, BMS continuous and peak current, and inverter compatibility. Confirm MPPT maximum PV voltage/current and permitted string design from the equipment datasheets.</p>`;
+  window.lastSolarCalculation={dailyWh,runningW,estimatedSurgeW,inverterKVA,requiredBatteryKWh,batteryAh,batteryUnits,requiredPvW,installedPvW,panelCount,controllerSize,voltage};
+}
+function initSolarCalculator() {
+  addSolarLoadRow("LED lights",10,6,6,100,1);
+  addSolarLoadRow("Television",100,1,5,100,1);
+  addSolarLoadRow("Refrigerator",150,1,8,100,3);
+  addSolarLoadRow("Ceiling fan",75,2,8,100,1.5);
+  addSolarLoadRow("Router / decoder",25,1,8,100,1);
+  $("addSolarLoad").addEventListener("click",()=>addSolarLoadRow());
+  $("clearSolarLoads").addEventListener("click",()=>{$("solarLoadsBody").innerHTML="";$("solarResults").innerHTML='<div class="solar-empty">Load list cleared. Add appliances to continue.</div>';window.lastSolarCalculation=null;});
+  $("solarLoadsBody").addEventListener("click",event=>{const button=event.target.closest(".solar-remove");if(button)button.closest("tr").remove();});
+  $("calculateSolar").addEventListener("click",calculateSolarSystem);
+  $("solarBatteryType").addEventListener("change",()=>{$("solarBatteryUnit").value=$("solarBatteryType").value==="lithium"?"5.12":"2.4";});
+  $("printSolar").addEventListener("click",()=>{if(!window.lastSolarCalculation)calculateSolarSystem();if(window.lastSolarCalculation)window.print();});
+  calculateSolarSystem();
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   if (!await requireAdmin()) return;
   await Promise.all([loadRequests(), loadProducts(), loadProjects()]);
+  initSolarCalculator();
   $("statusFilter").addEventListener("change", renderRequests);
   $("refreshAll").addEventListener("click", () => Promise.all([loadRequests(), loadProducts(), loadProjects()]));
   $("logoutBtn").addEventListener("click", async () => { await adminClient.auth.signOut(); location.replace("auth.html"); });
