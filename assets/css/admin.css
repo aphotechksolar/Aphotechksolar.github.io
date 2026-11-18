@@ -13,3 +13,34 @@
 .project-admin-thumb img, .project-admin-thumb video { width:100%; height:100%; object-fit:cover; display:block; }
 .projects-admin-table .product-actions { white-space:nowrap; }
 @media (max-width:700px){ .projects-admin-table .product-actions { white-space:normal; } .project-admin-thumb { width:70px; height:52px; } }
+
+
+/* Solar calculator - responsive admin module */
+.solar-calc-body{padding:20px}
+.solar-calc-help,.solar-calc-warning,.solar-calc-note{font-size:13px;line-height:1.55;color:var(--muted)}
+.solar-load-table{width:100%;min-width:820px;border-collapse:collapse}
+.solar-load-table th,.solar-load-table td{padding:8px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}
+.solar-load-table th{background:#f8faf9;color:#526168}
+.solar-load-table input{width:100%;min-width:62px;padding:9px;border:1px solid #ccd6d8;border-radius:8px;background:#fff}
+.solar-load-table td:first-child input{min-width:125px}
+.solar-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.solar-settings{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}
+.solar-settings label{font-size:12px;font-weight:700;color:#526168}
+.solar-settings input,.solar-settings select{display:block;width:100%;margin-top:6px;padding:11px;border:1px solid #ccd6d8;border-radius:10px;background:#fff;color:var(--dark)}
+.solar-results{margin-top:18px}
+.solar-empty{padding:22px;border:1px dashed #ccd6d8;border-radius:12px;text-align:center;color:var(--muted)}
+.solar-result-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}
+.solar-result-heading h3{margin:0;font-size:19px}
+.solar-result-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.solar-result-card,.solar-detail-box{padding:15px;border:1px solid var(--line);border-radius:13px;background:#fbfcfc}
+.solar-result-card span{display:block;color:var(--muted);font-size:12px}
+.solar-result-card strong{display:block;color:#087f40;font-size:21px;margin:7px 0;overflow-wrap:anywhere}
+.solar-result-card small{display:block;color:var(--muted);font-size:11px;line-height:1.45}
+.solar-result-details{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.solar-detail-box h4{margin:0 0 10px}
+.solar-detail-box p{font-size:13px;line-height:1.45;margin:7px 0}
+.solar-calc-warning{padding:12px;background:#fff8e8;border-radius:10px;color:#805b14}
+.solar-calc-warning i{margin-right:5px}
+@media(max-width:800px){.solar-settings{grid-template-columns:repeat(2,minmax(0,1fr))}.solar-result-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.solar-calc-body{padding:14px}.solar-settings,.solar-result-details{grid-template-columns:1fr}.solar-result-heading{align-items:flex-start;flex-direction:column}.solar-result-card{padding:12px}.solar-result-card strong{font-size:19px}}
+@media print{.admin-topbar,.welcome-row,.stats-grid,.panel:not(.solar-calc-panel),.solar-actions{display:none!important}.solar-calc-panel{box-shadow:none;border:0}.solar-calc-panel .panel-heading{padding:0 0 12px}.solar-load-table{min-width:0}.solar-load-table input{border:0;padding:2px}.solar-calc-warning{color:#333}}
