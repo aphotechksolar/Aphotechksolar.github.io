@@ -68,3 +68,28 @@ html{scroll-behavior:smooth}body{background:var(--aph-ivory)!important;color:var
 #invoicePreview .invoice-thanks{text-align:center;color:var(--aph-muted);margin:24px 0 4px}
 @media(max-width:600px){.invoice-editor{padding:15px}.invoice-form-grid{grid-template-columns:1fr}.invoice-lines-head,.invoice-line{grid-template-columns:minmax(0,1fr) 52px minmax(92px,115px) 32px;gap:6px}.invoice-line input{padding:9px 6px;font-size:.85rem}.invoice-lines-head{font-size:.68rem}.invoice-line label{font-size:.74rem}.remove-line{height:38px}.invoice-editor-head{align-items:flex-start}}
 @media print{body{background:#fff!important}.invoice-editor,.invoice-preview-label,.store-nav,#invoiceMessage,.no-print{display:none!important}.store-shell{max-width:none!important;padding:0!important}.invoice-preview-wrap{max-width:none!important;margin:0!important}#invoicePreview{border:0!important;box-shadow:none!important;margin:0!important;padding:10mm!important;max-width:none!important}#invoicePreview .invoice-warning{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+
+
+/* Aphotech official company stamp and authorised signature area */
+#invoicePreview .invoice-authorisation{
+ display:flex!important;align-items:flex-end!important;justify-content:space-between!important;
+ gap:22px!important;margin:30px 0 18px!important;padding-top:18px!important;
+ border-top:1px solid var(--aph-line)!important;break-inside:avoid!important;
+}
+#invoicePreview .invoice-authorisation>div{flex:1;min-width:0;color:var(--aph-ink)}
+#invoicePreview .invoice-authorisation>div>strong{display:block;color:var(--aph-forest);font-size:.9rem}
+#invoicePreview .invoice-authorisation p{margin:8px 0;color:var(--aph-muted);font-size:.84rem}
+#invoicePreview .invoice-authorisation .signature-line{margin-top:28px!important;max-width:240px;border-top:1px solid #68736d;padding-top:7px}
+#invoicePreview .invoice-company-stamp{
+ display:block!important;width:clamp(118px,24vw,170px)!important;height:auto!important;
+ max-width:38%!important;object-fit:contain!important;flex:0 0 auto!important;
+ visibility:visible!important;opacity:1!important;filter:none!important;
+}
+@media(max-width:480px){
+ #invoicePreview .invoice-authorisation{gap:10px!important}
+ #invoicePreview .invoice-company-stamp{width:118px!important}
+}
+@media print{
+ #invoicePreview .invoice-company-stamp{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}
+ #invoicePreview .invoice-authorisation{break-inside:avoid!important}
+}
