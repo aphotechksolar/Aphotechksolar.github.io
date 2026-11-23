@@ -1,0 +1,92 @@
+/* Aphotech Solar marketplace refresh — warm ivory, deep green and solar gold */
+.packages-page{background:#f6f7f2;color:#20332a}
+.packages-page .market-header{background:#103d2b;box-shadow:0 5px 24px rgba(9,35,24,.16)}
+.packages-page .market-top{padding-top:13px;padding-bottom:13px}
+.packages-page .market-logo img{border-radius:12px;background:#fff;padding:3px}
+.packages-page .market-nav a{border-radius:999px}
+.packages-page .market-nav a.active,.packages-page .market-nav a:hover{background:#f0c75e;color:#183526}
+.packages-page .market-search{padding-top:0;padding-bottom:15px}
+.packages-page .location-box,.packages-page .search-box{border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.packages-page .search-box button{background:#f0c75e;color:#183526}
+.packages-page .package-hero{background:linear-gradient(110deg,rgba(10,48,33,.96),rgba(19,94,57,.84)),url("../images/solar-bg.jpg") center/cover;padding:clamp(48px,7vw,82px) 22px}
+.packages-page .package-hero h1{letter-spacing:-1.5px;line-height:1.08}
+.packages-page .package-hero p{font-size:1.06rem;max-width:620px}
+.packages-page .hero-badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2)}
+.packages-page .hero-whatsapp{background:#f0c75e;color:#173626;border-radius:999px;padding:13px 22px;box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.packages-page .category-section{background:#fff;border-bottom:1px solid #e6e9e1}
+.packages-page .category-pill{border-radius:999px;padding:10px 17px}
+.packages-page .category-pill.active,.packages-page .category-pill:hover{background:#176b43;border-color:#176b43}
+.packages-page .packages-section{padding-top:38px}
+.packages-page .section-label{color:#a57b13}
+.packages-page .packages-heading h2{color:#173c2b;letter-spacing:-.5px}
+.packages-page .market-grid,.packages-page .appliances-grid{gap:20px}
+.packages-page .solar-listing,.packages-page .appliance-card{border:1px solid #e5e9e2;border-radius:16px;box-shadow:0 5px 18px rgba(18,52,35,.055);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.packages-page .solar-listing:hover,.packages-page .appliance-card:hover{transform:translateY(-5px);border-color:#cbdacb;box-shadow:0 16px 34px rgba(18,52,35,.12)}
+.packages-page .listing-image,.packages-page .appliance-image{height:245px;background:#edf1e9}
+.packages-page .listing-image img,.packages-page .appliance-image img{object-fit:contain;padding:10px}
+.packages-page .listing-image .listing-badge{position:absolute!important;top:13px;left:13px;z-index:4;background:#176b43;border-radius:999px;padding:7px 11px;box-shadow:0 3px 12px rgba(0,0,0,.13)}
+.packages-page .listing-content,.packages-page .appliance-content{padding:17px}
+.packages-page .listing-content h3,.packages-page .appliance-content h3{color:#183b2a;font-size:1.05rem;line-height:1.3}
+.packages-page .listing-price,.packages-page .appliance-price{color:#176b43;font-size:1.25rem;font-weight:850}
+.packages-page .listing-use,.packages-page .appliance-content p{color:#69766e;line-height:1.5}
+.packages-page .listing-meta,.packages-page .appliance-meta{color:#718077}
+.packages-page .listing-actions,.packages-page .appliance-actions{display:flex;gap:9px;align-items:center;margin-top:14px}
+.packages-page .buy-button,.packages-page .appliance-buy{border-radius:9px;background:#176b43;color:#fff;font-weight:750;min-height:42px;display:flex;align-items:center;justify-content:center}
+.packages-page .buy-button:hover,.packages-page .appliance-buy:hover{background:#104d30}
+.packages-page .whatsapp-button,.packages-page .appliance-whatsapp{border-radius:9px}
+.product-details-button{border:1px solid #cbd9ce;background:#f5f8f2;color:#205239;border-radius:9px;min-height:42px;padding:0 13px;font:700 .82rem inherit;cursor:pointer;white-space:nowrap}
+.product-details-button:hover{background:#e8f1e8;border-color:#8eae98}
+.product-open-card{cursor:pointer}
+.product-open-card:focus-visible{outline:3px solid #d5a92f;outline-offset:3px}
+.product-open-card a,.product-open-card button{position:relative;z-index:2}
+.product-modal{position:fixed;inset:0;z-index:10020;display:none;align-items:center;justify-content:center;padding:20px}
+.product-modal.is-open{display:flex}
+.product-modal-backdrop{position:absolute;inset:0;background:rgba(5,22,14,.76);backdrop-filter:blur(5px)}
+.product-modal-panel{position:relative;z-index:1;width:min(900px,100%);max-height:min(90vh,850px);overflow:auto;background:#fff;border-radius:22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);box-shadow:0 25px 90px rgba(0,0,0,.3);animation:productModalIn .2s ease}
+@keyframes productModalIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.product-modal-close{position:absolute;right:13px;top:13px;z-index:3;width:42px;height:42px;border:0;border-radius:50%;background:#fff;color:#183b2a;font-size:1.1rem;box-shadow:0 3px 14px rgba(0,0,0,.15);cursor:pointer}
+.product-modal-image-wrap{min-height:430px;background:#f0f3ec;display:flex;align-items:center;justify-content:center;padding:28px}
+.product-modal-image-wrap img{width:100%;height:100%;max-height:540px;object-fit:contain;border-radius:12px}
+.product-modal-info{padding:42px 34px 32px;align-self:center}
+.product-modal-badge{display:inline-flex;background:#eaf3e9;color:#176b43;border-radius:999px;padding:7px 12px;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.product-modal-info h2{margin:14px 0 8px;color:#173c2b;font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.15}
+.product-modal-price{font-size:1.55rem;color:#176b43;font-weight:900;margin-bottom:14px}
+.product-modal-description{color:#59685f;line-height:1.7}
+.product-detail-facts{display:grid;gap:0;margin:22px 0;border-top:1px solid #e8ece6}
+.product-fact{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid #e8ece6;font-size:.9rem}
+.product-fact span{color:#758178}.product-fact strong{color:#263d30;text-align:right}
+.product-detail-note{font-size:.84rem;color:#69766e;line-height:1.6;background:#f6f8f3;border-left:3px solid #d8b34a;padding:12px 14px;border-radius:0 9px 9px 0}
+.product-modal-actions{display:flex;gap:10px;margin-top:22px}
+.product-modal-whatsapp,.product-modal-contact{min-height:46px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;border-radius:10px;font-weight:800}
+.product-modal-whatsapp{background:#176b43;color:#fff;flex:1}
+.product-modal-contact{border:1px solid #d9e1d9;color:#245239}
+body.product-modal-open{overflow:hidden}
+@media(max-width:700px){
+ .packages-page .market-top{padding-left:14px;padding-right:14px}
+ .packages-page .market-search{padding-left:14px;padding-right:14px}
+ .packages-page .location-box{display:none}
+ .packages-page .package-hero{padding:43px 18px}
+ .packages-page .packages-section{padding:25px 12px 42px}
+ .packages-page .market-grid,.packages-page .appliances-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .packages-page .listing-image,.packages-page .appliance-image{height:clamp(135px,42vw,190px)}
+ .packages-page .listing-content,.packages-page .appliance-content{padding:10px}
+ .packages-page .listing-content h3,.packages-page .appliance-content h3{font-size:.86rem}
+ .packages-page .listing-price,.packages-page .appliance-price{font-size:1rem}
+ .packages-page .listing-actions,.packages-page .appliance-actions{flex-wrap:wrap;gap:6px}
+ .packages-page .listing-actions .buy-button,.packages-page .appliance-actions .appliance-buy{flex:1}
+ .product-details-button{min-height:37px;padding:0 9px;font-size:.72rem}
+ .product-modal{padding:10px;align-items:flex-end}
+ .product-modal-panel{grid-template-columns:1fr;max-height:94vh;border-radius:19px}
+ .product-modal-image-wrap{min-height:220px;height:34vh;max-height:300px;padding:16px}
+ .product-modal-image-wrap img{max-height:100%}
+ .product-modal-info{padding:22px 19px 24px}
+ .product-modal-info h2{font-size:1.5rem;padding-right:34px}
+ .product-modal-price{font-size:1.3rem}
+ .product-modal-close{right:10px;top:10px}
+}
+@media(max-width:380px){
+ .packages-page .market-grid,.packages-page .appliances-grid{gap:7px}
+ .packages-page .listing-content,.packages-page .appliance-content{padding:8px}
+ .product-details-button{font-size:.68rem;padding:0 7px}
+ .product-modal-actions{flex-direction:column}
+}
