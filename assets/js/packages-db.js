@@ -32,69 +32,60 @@ function applianceCard(p){
 function ensureProductModal(){
   if(document.getElementById("productDetailModal")) return;
   document.body.insertAdjacentHTML("beforeend", `
-    <div class="product-modal" id="productDetailModal" aria-hidden="true">
-      <div class="product-modal-backdrop" data-close-product></div>
-      <section class="product-modal-panel" role="dialog" aria-modal="true" aria-labelledby="productDetailTitle">
+    <div class="product-modal" id="productDetailModal" aria-hidden="true"><div class="product-modal-backdrop" data-close-product></div>
+      <section class="product-modal-panel" role="dialog" aria-modal="true" aria-labelledby="productDetailTitle" tabindex="-1">
         <button class="product-modal-close" type="button" aria-label="Close product details" data-close-product><i class="fa-solid fa-xmark"></i></button>
-        <div class="product-modal-image-wrap"><img id="productDetailImage" src="" alt=""></div>
-        <div class="product-modal-info">
-          <span class="product-modal-badge" id="productDetailBadge">Solar solution</span>
-          <h2 id="productDetailTitle"></h2>
-          <div class="product-modal-price" id="productDetailPrice"></div>
-          <p class="product-modal-description" id="productDetailDescription"></p>
-          <div class="product-detail-facts" id="productDetailFacts"></div>
-          <p class="product-detail-note">Need the exact panel, inverter and battery specifications? Contact our team for a sizing check based on your appliances and daily usage.</p>
-          <div class="product-modal-actions">
-            <a class="product-modal-whatsapp" id="productDetailWhatsApp" href="#" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Ask on WhatsApp</a>
-            <a class="product-modal-contact" href="contact.html">Contact us</a>
-          </div>
+        <div class="product-modal-media"><div class="product-modal-image-wrap"><img id="productDetailImage" src="" alt=""></div><div class="product-gallery-thumbs" id="productGalleryThumbs"></div></div>
+        <div class="product-modal-info"><span class="product-modal-badge" id="productDetailBadge">Solar solution</span><h2 id="productDetailTitle"></h2><div class="product-modal-price" id="productDetailPrice"></div>
+          <span class="product-stock-status" id="productDetailStock"></span><p class="product-modal-description" id="productDetailDescription"></p><p class="product-modal-long-description" id="productDetailLongDescription"></p>
+          <div class="product-detail-section" id="productSpecificationsSection"><h3>Technical specifications</h3><div class="product-spec-grid" id="productDetailSpecifications"></div></div>
+          <div class="product-detail-section" id="productComponentsSection"><h3>What is included</h3><ul id="productDetailComponents"></ul></div>
+          <div class="product-detail-section" id="productAppliancesSection"><h3>Suitable for / usage</h3><ul id="productDetailAppliances"></ul></div>
+          <div class="product-detail-section product-extra-info" id="productExtraInfo"></div>
+          <p class="product-detail-note">Solar system performance depends on actual appliances, usage hours, installation conditions and component specifications. Ask us to confirm suitability before purchase.</p>
+          <div class="product-modal-actions"><a class="product-modal-whatsapp" id="productDetailWhatsApp" href="#" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Request a quote</a><a class="product-modal-contact" href="contact.html">Contact us</a></div>
         </div>
       </section>
     </div>`);
 }
+function renderProductList(targetId,items){
+  const target=document.getElementById(targetId); if(!target)return;
+  target.innerHTML=(items||[]).map(item=>`<li>${safe(item)}</li>`).join("");
+  const section=target.closest(".product-detail-section"); if(section)section.hidden=!(items||[]).length;
+}
 function openProductDetails(id){
-  const p = productCache.get(String(id));
-  if(!p) return;
-  ensureProductModal();
-  const modal = document.getElementById("productDetailModal");
-  const image = document.getElementById("productDetailImage");
-  image.src = p.image_path || "assets/images/custom.jpg";
-  image.alt = p.name || "Solar product";
-  document.getElementById("productDetailBadge").textContent = p.badge || (p.category === "appliance" ? "Solar powered" : "Solar package");
-  document.getElementById("productDetailTitle").textContent = p.name || "Solar solution";
-  document.getElementById("productDetailPrice").textContent = formatNaira(p.price);
-  document.getElementById("productDetailDescription").textContent = p.description || "Speak with Aphotech Solar Solution for more information about this product.";
-  const facts = [];
-  if(p.capacity) facts.push(["Capacity",p.capacity]);
-  if(p.category) facts.push(["Product type",p.category === "appliance" ? "Solar appliance" : "Solar package"]);
-  if(p.meta_text) facts.push(["Location",p.meta_text]);
-  document.getElementById("productDetailFacts").innerHTML = facts.map(([k,v]) => `<div class="product-fact"><span>${safe(k)}</span><strong>${safe(v)}</strong></div>`).join("");
-  document.getElementById("productDetailWhatsApp").href = wa(productMessage(p));
-  modal.classList.add("is-open");
-  modal.setAttribute("aria-hidden","false");
-  document.body.classList.add("product-modal-open");
-  document.getElementById("productDetailTitle").focus?.();
+  const p=productCache.get(String(id));if(!p)return;ensureProductModal();
+  const modal=document.getElementById("productDetailModal"),mainImage=document.getElementById("productDetailImage");
+  const gallery=[...new Set([p.image_path,...(Array.isArray(p.gallery)?p.gallery:[])].filter(Boolean))];
+  mainImage.src=gallery[0]||"assets/images/custom.jpg";mainImage.alt=p.name||"Solar product";
+  const thumbs=document.getElementById("productGalleryThumbs");
+  thumbs.innerHTML=gallery.length>1?gallery.map((src,i)=>`<button type="button" class="product-gallery-thumb ${i===0?"active":""}" data-gallery-image="${safe(src)}" aria-label="View product photo ${i+1}"><img src="${safe(src)}" alt=""></button>`).join(""):"";thumbs.hidden=gallery.length<2;
+  document.getElementById("productDetailBadge").textContent=p.badge||(p.category==="appliance"?"Solar powered":"Solar package");
+  document.getElementById("productDetailTitle").textContent=p.name||"Solar solution";
+  document.getElementById("productDetailPrice").textContent=formatNaira(p.price);
+  document.getElementById("productDetailStock").textContent=p.stock_status||"Contact for availability";
+  document.getElementById("productDetailDescription").textContent=p.description||"";
+  const long=document.getElementById("productDetailLongDescription");long.textContent=p.long_description||"";long.hidden=!p.long_description;
+  const specs=Object.entries(p.specifications||{});
+  document.getElementById("productDetailSpecifications").innerHTML=specs.map(([k,v])=>`<div class="product-spec"><span>${safe(k)}</span><strong>${safe(v)}</strong></div>`).join("");
+  document.getElementById("productSpecificationsSection").hidden=!specs.length;
+  renderProductList("productDetailComponents",p.components);renderProductList("productDetailAppliances",p.supported_appliances);
+  const extra=[];if(p.warranty)extra.push(["Warranty",p.warranty]);if(p.installation)extra.push(["Installation",p.installation]);if(p.capacity)extra.push(["System capacity",p.capacity]);if(p.meta_text)extra.push(["Service area",p.meta_text]);
+  const extraTarget=document.getElementById("productExtraInfo");extraTarget.innerHTML=extra.map(([k,v])=>`<div class="product-extra-row"><span>${safe(k)}</span><strong>${safe(v)}</strong></div>`).join("");extraTarget.hidden=!extra.length;
+  const enquiry=`Hello Aphotech Solar Solution, I would like to enquire about: ${p.name}. Price shown: ${formatNaira(p.price)}. Please confirm current availability, exact component specifications, warranty and installation details.`;
+  document.getElementById("productDetailWhatsApp").href=wa(enquiry);
+  modal.classList.add("is-open");modal.setAttribute("aria-hidden","false");document.body.classList.add("product-modal-open");modal.querySelector(".product-modal-panel").focus();
 }
-function closeProductDetails(){
-  const modal = document.getElementById("productDetailModal");
-  if(!modal) return;
-  modal.classList.remove("is-open");
-  modal.setAttribute("aria-hidden","true");
-  document.body.classList.remove("product-modal-open");
-}
-document.addEventListener("click", e => {
-  const open = e.target.closest("[data-open-product]");
-  if(open){ e.preventDefault(); e.stopPropagation(); openProductDetails(open.dataset.openProduct); return; }
-  if(e.target.closest("[data-close-product]")) closeProductDetails();
-  const card = e.target.closest(".product-open-card");
-  if(card && !e.target.closest("a,button")) openProductDetails(card.dataset.productId);
+function closeProductDetails(){const modal=document.getElementById("productDetailModal");if(!modal)return;modal.classList.remove("is-open");modal.setAttribute("aria-hidden","true");document.body.classList.remove("product-modal-open");}
+document.addEventListener("click",e=>{
+  const thumb=e.target.closest("[data-gallery-image]");
+  if(thumb){const img=document.getElementById("productDetailImage");if(img)img.src=thumb.dataset.galleryImage;document.querySelectorAll(".product-gallery-thumb").forEach(el=>el.classList.toggle("active",el===thumb));return;}
+  const open=e.target.closest("[data-open-product]");
+  if(open){e.preventDefault();e.stopPropagation();openProductDetails(open.dataset.openProduct);return;}
+  if(e.target.closest("[data-close-product]"))closeProductDetails();
+  const card=e.target.closest(".product-open-card");if(card&&!e.target.closest("a,button"))openProductDetails(card.dataset.productId);
 });
-document.addEventListener("keydown", e => {
-  if(e.key === "Escape") closeProductDetails();
-  if((e.key === "Enter" || e.key === " ") && e.target.matches(".product-open-card")){
-    e.preventDefault(); openProductDetails(e.target.dataset.productId);
-  }
-});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeProductDetails();if((e.key==="Enter"||e.key===" ")&&e.target.matches(".product-open-card")){e.preventDefault();openProductDetails(e.target.dataset.productId);}});
 async function loadPublicProducts(){
   try{
     const {data,error}=await packageDb.from("products").select("*").eq("active",true).order("category").order("sort_order").order("name");
