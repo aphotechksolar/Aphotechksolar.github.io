@@ -304,7 +304,7 @@
             class="buy-button"
             onclick="buyNow('1kVA Solar System', 850000)"
           >
-            Buy Now
+            Request Quote
           </button>
 
           <a
@@ -385,7 +385,7 @@
             class="buy-button"
             onclick="buyNow('2kVA Solar System', 1600000)"
           >
-            Buy Now
+            Request Quote
           </button>
 
           <a
@@ -465,7 +465,7 @@
             class="buy-button"
             onclick="buyNow('3kVA Solar System', 2500000)"
           >
-            Buy Now
+            Request Quote
           </button>
 
           <a
@@ -545,7 +545,7 @@
             class="buy-button"
             onclick="buyNow('5kVA Solar System', 4500000)"
           >
-            Buy Now
+            Request Quote
           </button>
 
           <a
@@ -625,7 +625,7 @@
             class="buy-button"
             onclick="buyNow('10kVA Solar System', 8000000)"
           >
-            Buy Now
+            Request Quote
           </button>
 
           <a
@@ -825,7 +825,7 @@
             target="_blank"
             rel="noopener noreferrer"
           >
-            Buy Now
+            Request Quote
           </a>
 
 
@@ -909,7 +909,7 @@
             target="_blank"
             rel="noopener noreferrer"
           >
-            Buy Now
+            Request Quote
           </a>
 
 
@@ -993,7 +993,7 @@
             target="_blank"
             rel="noopener noreferrer"
           >
-            Buy Now
+            Request Quote
           </a>
 
 
@@ -1146,10 +1146,8 @@
   =============================== */
 
   function buyNow(packageName, amount) {
-
-    window.location.href =
-      `invoice/invoice.html?package=${encodeURIComponent(packageName)}&amount=${amount}`;
-
+    const message = `Hello Aphotech Solar Solution, I would like to request a quotation for ${packageName}. Please confirm the current price, package components and installation details.`;
+    window.open(`https://wa.me/2348165029912?text=${encodeURIComponent(message)}`, "_blank", "noopener");
   }
 
 
