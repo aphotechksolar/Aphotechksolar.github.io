@@ -27,7 +27,7 @@ function applianceCard(p){
   return `<article class="appliance-card product-open-card" data-product-id="${safe(p.id)}" data-name="${safe(p.name)}" data-description="${safe(p.description)}" data-capacity="${safe(p.capacity)}" tabindex="0" role="button" aria-label="View details for ${safe(p.name)}">
     <div class="appliance-image"><img src="${safe(p.image_path || "assets/images/solar-freezer.jpg")}" alt="${safe(p.name)}" loading="lazy"><span class="appliance-badge">${safe(p.badge || "Solar Powered")}</span></div>
     <div class="appliance-content"><h3>${safe(p.name)}</h3><div class="appliance-price">${formatNaira(p.price)}</div><p>${safe(p.description || "Reliable solar appliance.")}</p>
-    <div class="appliance-actions"><button class="product-details-button" type="button" data-open-product="${safe(p.id)}">View details</button><button class="store-product-add" type="button" data-add-cart="${safe(p.id)}">Add to cart</button><a class="appliance-buy" href="${wa(productMessage(p))}" target="_blank" rel="noopener">Request a quote</a></div></div></article>`;
+    <div class="appliance-actions"><button class="product-details-button" type="button" data-open-product="${safe(p.id)}">View details</button><a class="appliance-buy" href="${wa(productMessage(p))}" target="_blank" rel="noopener">Request a quote</a></div></div></article>`;
 }
 function ensureProductModal(){
   if(document.getElementById("productDetailModal")) return;
@@ -73,7 +73,7 @@ function openProductDetails(id){
   const extra=[];if(p.warranty)extra.push(["Warranty",p.warranty]);if(p.installation)extra.push(["Installation",p.installation]);if(p.capacity)extra.push(["System capacity",p.capacity]);if(p.meta_text)extra.push(["Service area",p.meta_text]);
   const extraTarget=document.getElementById("productExtraInfo");extraTarget.innerHTML=extra.map(([k,v])=>`<div class="product-extra-row"><span>${safe(k)}</span><strong>${safe(v)}</strong></div>`).join("");extraTarget.hidden=!extra.length;
   const enquiry=`Hello Aphotech Solar Solution, I would like to enquire about: ${p.name}. Price shown: ${formatNaira(p.price)}. Please confirm current availability, exact component specifications, warranty and installation details.`;
-  document.getElementById("productDetailWhatsApp").href=wa(enquiry);\n  const cartButton=document.getElementById("productModalAddCart");if(cartButton){cartButton.dataset.addCart=String(p.id);}
+  document.getElementById("productDetailWhatsApp").href=wa(enquiry);
   modal.classList.add("is-open");modal.setAttribute("aria-hidden","false");document.body.classList.add("product-modal-open");modal.querySelector(".product-modal-panel").focus();
 }
 function closeProductDetails(){const modal=document.getElementById("productDetailModal");if(!modal)return;modal.classList.remove("is-open");modal.setAttribute("aria-hidden","true");document.body.classList.remove("product-modal-open");}
