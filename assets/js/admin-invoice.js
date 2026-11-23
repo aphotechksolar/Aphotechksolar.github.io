@@ -1,7 +1,7 @@
 (() => {
 const URL="https://xeyuuydojhlhpsdvkfcj.supabase.co",KEY="sb_publishable_3AgCAUJYvcN4w7hSC3bS9Q_eR2VsIWN",db=supabase.createClient(URL,KEY);
 const $=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c])),money=n=>"₦"+Number(n||0).toLocaleString("en-NG");
-let source={},sourceType="",sourceId="",invoice=null,session=null,rows=[];
+let source={},sourceType="",sourceId="",invoice=null,session=null,rows=[],paymentApprovalConfirmed=false;
 const defaultWarning="IMPORTANT PAYMENT & DELIVERY NOTICE: Please pay only into the official Aphotech account shown below. Do not rely on transfer screenshots, SMS alerts or payment receipts as proof of payment. Aphotech Solar Solution will confirm cleared funds directly in its Moniepoint account. Procurement, delivery, installation or work scheduling will begin only after payment has been verified. Contact us immediately if anyone gives you different account details.";
 const defaultTerms="This invoice is valid for 7 days from the issue date unless otherwise stated. Product availability and installation dates are subject to confirmation. Any changes to the agreed scope or site conditions may affect the final price. Keep this invoice and your payment reference for your records.";
 function notice(s,kind="warn"){const e=$("invoiceMessage");e.hidden=!s;e.className="store-alert "+(kind==="error"?"store-error":kind==="success"?"store-success":"");e.textContent=s;}
@@ -48,11 +48,13 @@ function formMarkup(){
  $("saveInvoice").onclick=saveInvoice;
  $("markInvoicePaid").textContent=invoice?.payment_status==="paid"?"Payment verified":"Confirm payment received";
  $("markInvoicePaid").disabled=invoice?.payment_status==="paid";
- $("markInvoicePaid").onclick=()=>{if(invoice?.payment_status==="paid"){notice("This invoice is already marked paid.");return;}if(!confirm("Have you personally verified cleared funds in Aphotech's Moniepoint account? Only continue if the money is actually received."))return;$("paymentStatus").value="paid";calc();saveInvoice();};
+ $("markInvoicePaid").onclick=()=>{if(invoice?.payment_status==="paid"){notice("This invoice is already marked paid.");return;}if(!confirm("Have you personally verified cleared funds in Aphotech's Moniepoint account? Only continue if the money is actually received."))return;paymentApprovalConfirmed=true;$("paymentStatus").value="paid";calc();saveInvoice();};
 }
 async function saveInvoice(){
+ if($("paymentStatus").value==="paid" && invoice?.payment_status!=="paid" && !paymentApprovalConfirmed){notice("Use Confirm payment received and verify the Moniepoint transaction before marking this invoice as paid.","error");return;}
  const name=$("customerName").value.trim();if(!name){notice("Enter the customer's name before saving.","error");return;}
  if(!rows.length||rows.some(r=>!String(r.name).trim())){notice("Every invoice item needs a description.","error");return;}
+ if(total()<=0){notice("Invoice total must be greater than zero.","error");return;}
  if(rows.some(r=>n(r.qty)<1)){notice("Quantity must be at least 1.","error");return;}
  const payload={invoice_number:$("invoiceNumber").value.trim(),quote_request_id:sourceType==="quote"?Number(sourceId):null,order_id:sourceType==="order"?Number(sourceId):null,created_by:session.user.id,customer_name:name,customer_phone:$("customerPhone").value.trim(),customer_email:$("customerEmail").value.trim(),customer_address:$("customerAddress").value.trim(),line_items:rows.map(r=>({name:String(r.name).trim(),qty:Math.max(1,Math.floor(n(r.qty))),amount:n(r.amount)})),subtotal:rows.reduce((a,r)=>a+n(r.amount),0),delivery_fee:n($("deliveryFee").value),total_amount:total(),warning_note:$("warningNote").value.trim(),terms:$("invoiceTerms").value.trim(),payment_status:$("paymentStatus").value,updated_at:new Date().toISOString()};
  const button=$("saveInvoice");button.disabled=true;button.textContent="Saving…";
@@ -61,7 +63,8 @@ async function saveInvoice(){
  else result=await db.from("sales_invoices").insert(payload).select().single();
  button.disabled=false;button.innerHTML='<i class="fa-solid fa-floppy-disk"></i> Save invoice';
  if(result.error){notice("Could not save invoice: "+result.error.message,"error");return;}
- invoice=result.data;
+ invoice=result.data;paymentApprovalConfirmed=false;
+ $("markInvoicePaid").textContent=invoice.payment_status==="paid"?"Payment verified":"Confirm payment received";$("markInvoicePaid").disabled=invoice.payment_status==="paid";
  if(sourceType==="quote"){
   const {error}=await db.from("quote_requests").update({full_name:name,phone:payload.customer_phone,email:payload.customer_email,location:payload.customer_address,quoted_amount:payload.total_amount,status:"Quoted"}).eq("id",sourceId);
   if(error)notice("Invoice saved, but the original quote details could not be synced: "+error.message,"error");
