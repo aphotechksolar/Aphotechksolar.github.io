@@ -232,7 +232,7 @@ async function saveProduct(e) {
       payload.image_path = await uploadProductImage(file);
     }
     const galleryFiles = Array.from($("productGalleryFiles").files || []);
-    if (galleryFiles.length > 5) throw new Error("Please select no more than 5 additional photos.");
+    if (galleryFiles.length + (payload.gallery || []).length > 5) throw new Error("A product can have a maximum of 5 additional photos. Remove an existing photo or select fewer.");
     if (galleryFiles.length) {
       flash("Uploading product gallery...", "success");
       const uploadedGallery = await Promise.all(galleryFiles.map(uploadProductImage));
@@ -517,12 +517,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
   $("productGalleryFiles").addEventListener("change", () => {
     const files = Array.from($("productGalleryFiles").files || []);
-    if (files.length > 5 || files.some(f => !f.type.startsWith("image/") || f.size > 8*1024*1024)) {
+    const savedGallery = JSON.parse($("productGalleryExisting").value || "[]");
+    if (files.length + savedGallery.length > 5 || files.some(f => !f.type.startsWith("image/") || f.size > 8*1024*1024)) {
       $("productGalleryFiles").value = "";
-      flash("Choose up to 5 images, each under 8 MB.", "error");
+      flash("A product can have up to 5 gallery photos total. Each must be under 8 MB.", "error");
       return;
     }
-    const savedGallery = JSON.parse($("productGalleryExisting").value || "[]");
     renderProductGalleryPreview([...savedGallery, ...files.map(f => URL.createObjectURL(f))], savedGallery.length);
   });
   $("productImageFile").addEventListener("change", () => {
