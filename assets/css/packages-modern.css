@@ -34,7 +34,7 @@
 .packages-page .buy-button,.packages-page .appliance-buy{border-radius:9px;background:#176b43;color:#fff;font-weight:750;min-height:42px;display:flex;align-items:center;justify-content:center}
 .packages-page .buy-button:hover,.packages-page .appliance-buy:hover{background:#104d30}
 .packages-page .whatsapp-button,.packages-page .appliance-whatsapp{border-radius:9px}
-.product-details-button{border:1px solid #cbd9ce;background:#f5f8f2;color:#205239;border-radius:9px;min-height:42px;padding:0 13px;font:700 .82rem inherit;cursor:pointer;white-space:nowrap}
+.product-details-button{border:1px solid #cbd9ce;background:#f5f8f2;color:#205239;border-radius:9px;min-height:42px;padding:0 13px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap}
 .product-details-button:hover{background:#e8f1e8;border-color:#8eae98}
 .product-open-card{cursor:pointer}
 .product-open-card:focus-visible{outline:3px solid #d5a92f;outline-offset:3px}
