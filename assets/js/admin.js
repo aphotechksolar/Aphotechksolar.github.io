@@ -124,6 +124,27 @@ function renderProducts() {
   </tr>`).join("");
 }
 
+function parseProductLines(value) {
+  return value.split("\n").map(line => line.trim()).filter(Boolean).slice(0,30);
+}
+function parseProductSpecifications(value) {
+  const result = {};
+  value.split("\n").forEach(line => {
+    const index = line.indexOf(":");
+    if (index > 0) {
+      const key = line.slice(0,index).trim();
+      const val = line.slice(index+1).trim();
+      if (key && val) result[key] = val;
+    }
+  });
+  return result;
+}
+function renderProductGalleryPreview(urls) {
+  const target = $("productGalleryPreview");
+  if (!target) return;
+  target.innerHTML = (urls || []).map(url => `<img src="${esc(url)}" alt="Product gallery preview">`).join("");
+}
+
 function updateProductImagePreview(src) {
   const preview = $("productImagePreview");
   const hint = $("productImageHint");
@@ -144,6 +165,16 @@ function fillProductForm(p) {
   $("productCategory").value = p?.category || "package";
   $("productPrice").value = p?.price ?? "";
   $("productDescription").value = p?.description || "";
+  $("productLongDescription").value = p?.long_description || "";
+  $("productWarranty").value = p?.warranty || "";
+  $("productInstallation").value = p?.installation || "";
+  $("productStockStatus").value = p?.stock_status || "Available";
+  $("productSpecifications").value = Object.entries(p?.specifications || {}).map(([k,v]) => `${k}: ${v}`).join("\n");
+  $("productComponents").value = (p?.components || []).join("\n");
+  $("productAppliances").value = (p?.supported_appliances || []).join("\n");
+  $("productGalleryExisting").value = JSON.stringify(p?.gallery || []);
+  $("productGalleryFiles").value = "";
+  renderProductGalleryPreview(p?.gallery || []);
   $("productImage").value = p?.image_path || "";
   $("productImageFile").value = "";
   updateProductImagePreview(p?.image_path || "");
@@ -178,6 +209,14 @@ async function saveProduct(e) {
     category:$("productCategory").value,
     price:$("productPrice").value === "" ? null : Number($("productPrice").value),
     description:$("productDescription").value.trim() || null,
+    long_description:$("productLongDescription").value.trim() || null,
+    warranty:$("productWarranty").value.trim() || null,
+    installation:$("productInstallation").value.trim() || null,
+    stock_status:$("productStockStatus").value || "Available",
+    specifications:parseProductSpecifications($("productSpecifications").value),
+    components:parseProductLines($("productComponents").value),
+    supported_appliances:parseProductLines($("productAppliances").value),
+    gallery:JSON.parse($("productGalleryExisting").value || "[]"),
     image_path:$("productImage").value.trim() || null,
     badge:$("productBadge").value.trim() || null,
     capacity:$("productCapacity").value.trim() || null,
@@ -191,6 +230,13 @@ async function saveProduct(e) {
     if (file) {
       flash("Uploading product image...", "success");
       payload.image_path = await uploadProductImage(file);
+    }
+    const galleryFiles = Array.from($("productGalleryFiles").files || []);
+    if (galleryFiles.length > 5) throw new Error("Please select no more than 5 additional photos.");
+    if (galleryFiles.length) {
+      flash("Uploading product gallery...", "success");
+      const uploadedGallery = await Promise.all(galleryFiles.map(uploadProductImage));
+      payload.gallery = [...(payload.gallery || []), ...uploadedGallery].slice(0,5);
     }
     const result = id
       ? await adminClient.from("products").update(payload).eq("id", id)
@@ -460,6 +506,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   $("logoutBtn").addEventListener("click", async () => { await adminClient.auth.signOut(); location.replace("auth.html"); });
   $("showAddProduct").addEventListener("click", () => { $("productForm").reset(); $("productId").value=""; $("productImage").value=""; $("productActive").checked=true; fillProductForm(); });
   $("cancelProduct").addEventListener("click", () => $("productFormWrap").classList.add("hidden"));
+  $("productGalleryFiles").addEventListener("change", () => {
+    const files = Array.from($("productGalleryFiles").files || []);
+    if (files.length > 5 || files.some(f => !f.type.startsWith("image/") || f.size > 8*1024*1024)) {
+      $("productGalleryFiles").value = "";
+      flash("Choose up to 5 images, each under 8 MB.", "error");
+      return;
+    }
+    renderProductGalleryPreview(files.map(f => URL.createObjectURL(f)));
+  });
   $("productImageFile").addEventListener("change", () => {
     const file = $("productImageFile").files[0];
     if (!file) return updateProductImagePreview($("productImage").value);
