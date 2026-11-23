@@ -1166,7 +1166,7 @@
       if (activeCategory.includes("home")) matchesCategory = /home|light|tv|fan|fridge|freezer|residential|house|1kva|2kva|3kva/i.test(text);
       else if (activeCategory.includes("office")) matchesCategory = /office|computer|printer|commercial|business/i.test(text);
       else if (activeCategory.includes("business")) matchesCategory = /business|commercial|shop|factory|school|estate|office/i.test(text);
-      else if (activeCategory.includes("high")) matchesCategory = /([4-9]|[1-9][0-9])\\s*kva|commercial|high capacity/i.test(capacity + " " + text);
+      else if (activeCategory.includes("high")) matchesCategory = /([4-9]|[1-9][0-9])\s*kva|commercial|high capacity/i.test(capacity + " " + text);
       card.style.display = matchesSearch && matchesCategory ? "" : "none";
     });
   }
