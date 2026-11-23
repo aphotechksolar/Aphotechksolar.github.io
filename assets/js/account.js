@@ -71,7 +71,7 @@ async function loadDashboard() {
 
   const { data: requests, error: requestsError } = await supabaseClient
     .from("quote_requests")
-    .select("id,full_name,location,property_type,preferred_package,loads,message,status,created_at")
+    .select("id,full_name,location,property_type,preferred_package,loads,message,status,quoted_amount,created_at")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -122,6 +122,7 @@ async function loadDashboard() {
           <span><i class="fa-solid fa-building"></i> ${escapeHtml(request.property_type)}</span>
           ${request.preferred_package ? `<span><i class="fa-solid fa-bolt"></i> ${escapeHtml(request.preferred_package)}</span>` : ""}
           ${loads ? `<span><i class="fa-solid fa-plug"></i> ${escapeHtml(loads)}</span>` : ""}
+          ${request.quoted_amount != null ? `<span><i class="fa-solid fa-file-invoice-dollar"></i> Aphotech quote: ₦${Number(request.quoted_amount).toLocaleString("en-NG")}</span>` : ""}
         </div>
 
         ${request.message ? `<p class="request-message">${escapeHtml(request.message)}</p>` : ""}
