@@ -11,7 +11,7 @@ async function init(){
  if(type==="quote"){
   const {data:r,error}=await db.from("quote_requests").select("*").eq("id",id).maybeSingle();if(error||!r){notice("Quote request not found.");return;}
   customer={name:r.full_name,phone:r.phone,email:r.email||"",address:r.location||"",description:r.preferred_package||"Custom solar solution"};
-  total=Number(r.quoted_amount||0);number="APH-QINV-"+String(r.id).padStart(5,"0");status=r.status||"Pending";date=new Date(r.created_at).toLocaleDateString("en-NG");
+  total=Number(r.quoted_amount||0);number="APH-QINV-"+String(r.id).padStart(5,"0");status="Awaiting payment";date=new Date(r.created_at).toLocaleDateString("en-NG");
   rows=[{name:customer.description,qty:1,amount:total}];
  }else{
   const {data:o,error}=await db.from("orders").select("*").eq("id",id).maybeSingle();if(error||!o){notice("Order not found.");return;}
