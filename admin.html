@@ -71,7 +71,14 @@
           <label>Type<select id="productCategory"><option value="package">Solar Package</option><option value="appliance">Solar Appliance</option></select></label>
           <label>Price (₦)<input id="productPrice" type="number" min="0" step="1" placeholder="Leave blank for Contact Us"></label>
           <label>Short description<input id="productDescription"></label>
-          <label>Image path<input id="productImage" placeholder="assets/images/1kva.jpg"></label>
+          <input type="hidden" id="productImage">
+          <label class="product-image-upload">Package image
+            <input id="productImageFile" type="file" accept="image/*">
+          </label>
+          <div class="product-image-preview-wrap">
+            <img id="productImagePreview" class="product-image-preview" alt="Selected package image preview" hidden>
+            <span id="productImageHint" class="form-help">Choose an image from your phone. JPG, PNG or WebP; maximum 8 MB.</span>
+          </div>
           <label>Badge<input id="productBadge" placeholder="Popular"></label>
           <label>Capacity<input id="productCapacity" placeholder="3kVA"></label>
           <label>Sort order<input id="productSort" type="number" value="100"></label>
