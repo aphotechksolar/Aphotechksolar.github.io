@@ -1155,41 +1155,23 @@
      SEARCH
   =============================== */
 
-  function searchPackages() {
-
-    const searchInput =
-      document.getElementById("packageSearch");
-
-    const search =
-      searchInput.value.toLowerCase().trim();
-
-    const listings =
-      document.querySelectorAll(".solar-listing");
-
-    listings.forEach(function(listing) {
-
-      const name =
-        listing.dataset.name.toLowerCase();
-
-      const description =
-        listing.dataset.description.toLowerCase();
-
-      if (
-        name.includes(search) ||
-        description.includes(search)
-      ) {
-
-        listing.style.display = "";
-
-      } else {
-
-        listing.style.display = "none";
-
-      }
-
+  function filterAphotechProducts() {
+    const query = (document.getElementById("packageSearch")?.value || "").toLowerCase().trim();
+    const activeCategory = document.querySelector(".category-pill.active")?.textContent.trim().toLowerCase() || "trending";
+    document.querySelectorAll(".solar-listing,.appliance-card").forEach(card => {
+      const text = (card.innerText + " " + (card.dataset.name || "") + " " + (card.dataset.description || "")).toLowerCase();
+      const capacity = (card.dataset.capacity || card.innerText).toLowerCase();
+      const matchesSearch = !query || text.includes(query);
+      let matchesCategory = true;
+      if (activeCategory.includes("home")) matchesCategory = /home|light|tv|fan|fridge|freezer|residential|house|1kva|2kva|3kva/i.test(text);
+      else if (activeCategory.includes("office")) matchesCategory = /office|computer|printer|commercial|business/i.test(text);
+      else if (activeCategory.includes("business")) matchesCategory = /business|commercial|shop|factory|school|estate|office/i.test(text);
+      else if (activeCategory.includes("high")) matchesCategory = /([4-9]|[1-9][0-9])\\s*kva|commercial|high capacity/i.test(capacity + " " + text);
+      card.style.display = matchesSearch && matchesCategory ? "" : "none";
     });
-
   }
+  window.filterAphotechProducts = filterAphotechProducts;
+  function searchPackages() { filterAphotechProducts(); }
 
 
   /* Live search */
@@ -1268,23 +1250,13 @@
      CATEGORY BUTTONS
   =============================== */
 
-  document
-    .querySelectorAll(".category-pill")
-    .forEach(function(button) {
-
-      button.addEventListener("click", function() {
-
-        document
-          .querySelectorAll(".category-pill")
-          .forEach(btn =>
-            btn.classList.remove("active")
-          );
-
-        this.classList.add("active");
-
-      });
-
+  document.querySelectorAll(".category-pill").forEach(button => {
+    button.addEventListener("click", function() {
+      document.querySelectorAll(".category-pill").forEach(btn => btn.classList.remove("active"));
+      this.classList.add("active");
+      filterAphotechProducts();
     });
+  });
 
 </script>
 
