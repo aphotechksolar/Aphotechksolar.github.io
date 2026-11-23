@@ -16,6 +16,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       o => o.value.toLowerCase() === packageValue.toLowerCase()
     );
     if (option) packageField.value = option.value;
+    else {
+      const customOption = document.createElement("option");
+      customOption.value = packageValue;
+      customOption.textContent = packageValue;
+      packageField.appendChild(customOption);
+      packageField.value = packageValue;
+    }
   }
 
   const { data: sessionData, error: sessionError } =
