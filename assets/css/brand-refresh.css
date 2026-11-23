@@ -70,27 +70,53 @@ html{scroll-behavior:smooth}body{background:var(--aph-ivory)!important;color:var
 @media print{body{background:#fff!important}.invoice-editor,.invoice-preview-label,.store-nav,#invoiceMessage,.no-print{display:none!important}.store-shell{max-width:none!important;padding:0!important}.invoice-preview-wrap{max-width:none!important;margin:0!important}#invoicePreview{border:0!important;box-shadow:none!important;margin:0!important;padding:10mm!important;max-width:none!important}#invoicePreview .invoice-warning{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 
 
-/* Aphotech official company stamp and authorised signature area */
+
+/* Compact one-page invoice print layout and authorised signature */
 #invoicePreview .invoice-authorisation{
  display:flex!important;align-items:flex-end!important;justify-content:space-between!important;
- gap:16px!important;margin:24px 0 16px!important;padding-top:14px!important;
+ gap:12px!important;margin:12px 0 6px!important;padding-top:8px!important;
  border-top:1px solid var(--aph-line)!important;break-inside:avoid!important;
 }
 #invoicePreview .invoice-authorisation>div{flex:1;min-width:0;color:var(--aph-ink)}
-#invoicePreview .invoice-authorisation>div>strong{display:block;color:var(--aph-forest);font-size:.84rem}
-#invoicePreview .invoice-authorisation p{margin:5px 0;color:var(--aph-muted);font-size:.78rem}
-#invoicePreview .invoice-signature{display:block!important;width:170px!important;max-width:100%!important;height:76px!important;object-fit:contain!important;object-position:left center!important;margin:2px 0 0!important}
+#invoicePreview .invoice-authorisation>div>strong{display:block;color:var(--aph-forest);font-size:.78rem}
+#invoicePreview .invoice-authorisation p{margin:3px 0;color:var(--aph-muted);font-size:.7rem}
+#invoicePreview .invoice-signature-wrap{position:relative;width:150px;height:39px;margin-top:0}
+#invoicePreview .invoice-signature-wrap span{position:absolute;left:0;right:0;bottom:3px;border-bottom:1px solid #68736d}
+#invoicePreview .invoice-signature{position:absolute!important;z-index:1;left:0;bottom:2px;display:block!important;width:132px!important;height:37px!important;max-width:100%!important;object-fit:contain!important;object-position:left bottom!important;margin:0!important}
 #invoicePreview .invoice-company-stamp{
- display:block!important;width:82px!important;height:82px!important;max-width:82px!important;
- object-fit:contain!important;flex:0 0 82px!important;visibility:visible!important;
- opacity:1!important;filter:none!important;
+ display:block!important;width:42px!important;height:42px!important;max-width:42px!important;
+ object-fit:contain!important;flex:0 0 42px!important;visibility:visible!important;opacity:1!important;
 }
+#invoicePreview .invoice-thanks{margin:8px 0 0!important;font-size:.68rem}
 @media(max-width:480px){
- #invoicePreview .invoice-authorisation{gap:8px!important}
- #invoicePreview .invoice-signature{width:145px!important;height:66px!important}
- #invoicePreview .invoice-company-stamp{width:68px!important;height:68px!important;max-width:68px!important;flex-basis:68px!important}
+ #invoicePreview .invoice-authorisation{gap:7px!important}
+ #invoicePreview .invoice-signature-wrap{width:125px;height:36px}
+ #invoicePreview .invoice-signature{width:116px!important;height:34px!important}
+ #invoicePreview .invoice-company-stamp{width:38px!important;height:38px!important;max-width:38px!important;flex-basis:38px!important}
 }
+@page{size:A4 portrait;margin:7mm}
 @media print{
- #invoicePreview .invoice-company-stamp,#invoicePreview .invoice-signature{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}
- #invoicePreview .invoice-authorisation{break-inside:avoid!important}
+ html,body{width:210mm!important;margin:0!important;padding:0!important;background:#fff!important;font-size:8.5pt!important}
+ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .invoice-editor,.invoice-preview-label,.store-nav,#invoiceMessage,.no-print{display:none!important}
+ .store-shell,.invoice-preview-wrap{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+ #invoicePreview{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;font-size:8.5pt!important;line-height:1.22!important}
+ #invoicePreview h1{font-size:17pt!important;margin:0 0 3px!important}
+ #invoicePreview h2{font-size:11pt!important;margin:4px 0!important}
+ #invoicePreview h3{font-size:9pt!important;margin:4px 0!important}
+ #invoicePreview p{line-height:1.25!important;margin:3px 0!important}
+ #invoicePreview .invoice-meta{margin:9px 0!important;gap:8px!important}
+ #invoicePreview .invoice-customer{padding:8px 10px!important;margin:8px 0!important;border-radius:5px!important}
+ #invoicePreview .invoice-bank,#invoicePreview .invoice-warning,#invoicePreview .invoice-terms{padding:7px 9px!important;margin:7px 0!important;border-radius:5px!important;break-inside:avoid!important}
+ #invoicePreview .invoice-warning p,#invoicePreview .invoice-terms p{line-height:1.22!important;white-space:pre-wrap!important}
+ #invoicePreview .invoice-sums{margin:5px 0 7px auto!important}
+ #invoicePreview .invoice-sums p{padding:3px 0!important}
+ #invoicePreview .invoice-sums .invoice-due{font-size:10pt!important;padding-top:5px!important}
+ #invoicePreview table{font-size:8pt!important}
+ #invoicePreview td,#invoicePreview th{padding:4px!important}
+ #invoicePreview .invoice-authorisation{margin:7px 0 3px!important;padding-top:5px!important}
+ #invoicePreview .invoice-company-stamp{width:38px!important;height:38px!important;max-width:38px!important;flex-basis:38px!important}
+ #invoicePreview .invoice-signature-wrap{height:32px!important}
+ #invoicePreview .invoice-signature{height:30px!important;width:112px!important}
+ #invoicePreview .invoice-thanks{margin-top:4px!important}
 }
