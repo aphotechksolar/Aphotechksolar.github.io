@@ -44,3 +44,12 @@
 @media(max-width:800px){.solar-settings{grid-template-columns:repeat(2,minmax(0,1fr))}.solar-result-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.solar-calc-body{padding:14px}.solar-settings,.solar-result-details{grid-template-columns:1fr}.solar-result-heading{align-items:flex-start;flex-direction:column}.solar-result-card{padding:12px}.solar-result-card strong{font-size:19px}}
 @media print{.admin-topbar,.welcome-row,.stats-grid,.panel:not(.solar-calc-panel),.solar-actions{display:none!important}.solar-calc-panel{box-shadow:none;border:0}.solar-calc-panel .panel-heading{padding:0 0 12px}.solar-load-table{min-width:0}.solar-load-table input{border:0;padding:2px}.solar-calc-warning{color:#333}}
+
+
+/* Package image upload */
+.product-image-upload input[type="file"]{padding:12px;background:#fff;border:1px dashed #9eaeaa;cursor:pointer}
+.product-image-preview-wrap{display:flex;align-items:center;gap:12px;min-width:0}
+.product-image-preview{width:120px;height:100px;object-fit:contain;border:1px solid var(--line);border-radius:12px;background:#f8faf9;padding:5px}
+.product-image-preview[hidden]{display:none}
+.product-image-preview-wrap .form-help{margin:0}
+@media(max-width:600px){.product-image-preview{width:100px;height:88px}}
