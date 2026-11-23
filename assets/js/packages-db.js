@@ -91,11 +91,15 @@ async function loadPublicProducts(){
     const {data,error}=await packageDb.from("products").select("*").eq("active",true).order("category").order("sort_order").order("name");
     if(error || !data || !data.length) return;
     const packages=data.filter(p=>p.category === "package");
-    const appliances=data.filter(p=>p.category === "appliance");\n    const otherProducts=data.filter(p=>!["package","appliance"].includes(p.category));
+    const appliances=data.filter(p=>p.category === "appliance");
+    const otherProducts=data.filter(p=>!["package","appliance"].includes(p.category));
     const grid=document.getElementById("packageGrid");
-    const applianceGrid=document.querySelector(".appliances-grid");\n    const otherGrid=document.getElementById("otherProductsGrid");
+    const applianceGrid=document.querySelector(".appliances-grid");
+    const otherGrid=document.getElementById("otherProductsGrid");
     if(grid && packages.length) grid.innerHTML=packages.map(packageCard).join("");
-    if(applianceGrid && appliances.length) applianceGrid.innerHTML=appliances.map(applianceCard).join("");\n    if(otherGrid) otherGrid.innerHTML=otherProducts.map(packageCard).join("");\n    const otherSection=document.getElementById("otherProductsSection");if(otherSection)otherSection.hidden=!otherProducts.length;
+    if(applianceGrid && appliances.length) applianceGrid.innerHTML=appliances.map(applianceCard).join("");
+    if(otherGrid) otherGrid.innerHTML=otherProducts.map(packageCard).join("");
+    const otherSection=document.getElementById("otherProductsSection");if(otherSection)otherSection.hidden=!otherProducts.length;
     if (typeof window.filterAphotechProducts === "function") window.filterAphotechProducts();
     document.dispatchEvent(new Event("aphotechProductsLoaded"));
   }catch(e){console.warn("Public product price sync unavailable:",e);}
