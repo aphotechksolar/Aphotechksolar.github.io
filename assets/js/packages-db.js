@@ -20,7 +20,7 @@ function packageCard(p){
     <div class="listing-image"><img src="${safe(p.image_path || "assets/images/custom.jpg")}" alt="${safe(p.name)}" loading="lazy"><span class="listing-badge">${safe(p.badge || "Solar")}</span><button class="save-button" onclick="event.stopPropagation(); savePackage('${safe(p.name).replace(/'/g,"\\'")}')" aria-label="Save ${safe(p.name)}"><i class="fa-regular fa-heart"></i></button></div>
     <div class="listing-content"><h3>${safe(p.name)}</h3><div class="listing-price">${formatNaira(p.price)}</div><p class="listing-use">${safe(p.description || "Solar solution")}</p>
     <div class="listing-meta"><span><i class="fa-solid fa-location-dot"></i> ${safe(p.meta_text || "Nigeria")}</span><span><i class="fa-solid fa-solar-panel"></i> ${safe(p.capacity || "Solar")}</span></div>
-    <div class="listing-actions"><button class="product-details-button" type="button" data-open-product="${safe(p.id)}">View details</button><a class="buy-button" href="${wa(productMessage(p))}" target="_blank" rel="noopener">${isCustom ? "Request Quote" : "Buy Now"}</a></div></div></article>`;
+    <div class="listing-actions"><button class="product-details-button" type="button" data-open-product="${safe(p.id)}">View details</button><a class="buy-button" href="${wa(productMessage(p))}" target="_blank" rel="noopener">${isCustom ? "Request a quote" : "Request a quote"}</a></div></div></article>`;
 }
 function applianceCard(p){
   productCache.set(String(p.id), p);
