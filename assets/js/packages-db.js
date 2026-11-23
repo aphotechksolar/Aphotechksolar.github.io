@@ -20,7 +20,7 @@ function packageCard(p){
     <div class="listing-image"><img src="${safe(p.image_path || "assets/images/custom.jpg")}" alt="${safe(p.name)}" loading="lazy"><span class="listing-badge">${safe(p.badge || "Solar")}</span><button class="save-button" onclick="event.stopPropagation(); savePackage('${safe(p.name).replace(/'/g,"\\'")}')" aria-label="Save ${safe(p.name)}"><i class="fa-regular fa-heart"></i></button></div>
     <div class="listing-content"><h3>${safe(p.name)}</h3><div class="listing-price">${formatNaira(p.price)}</div><p class="listing-use">${safe(p.description || "Solar solution")}</p>
     <div class="listing-meta"><span><i class="fa-solid fa-location-dot"></i> ${safe(p.meta_text || "Nigeria")}</span><span><i class="fa-solid fa-solar-panel"></i> ${safe(p.capacity || "Solar")}</span></div>
-    <div class="listing-actions"><button class="product-details-button" type="button" data-open-product="${safe(p.id)}">View details</button><button class="store-product-add" type="button" data-add-cart="${safe(p.id)}">Add to cart</button><a class="buy-button" href="${wa(productMessage(p))}" target="_blank" rel="noopener">${isCustom ? "Request Quote" : "Buy Now"}</a></div></div></article>`;
+    <div class="listing-actions"><button class="product-details-button" type="button" data-open-product="${safe(p.id)}">View details</button><a class="buy-button" href="${wa(productMessage(p))}" target="_blank" rel="noopener">${isCustom ? "Request Quote" : "Buy Now"}</a></div></div></article>`;
 }
 function applianceCard(p){
   productCache.set(String(p.id), p);
@@ -43,7 +43,7 @@ function ensureProductModal(){
           <div class="product-detail-section" id="productAppliancesSection"><h3>Suitable for / usage</h3><ul id="productDetailAppliances"></ul></div>
           <div class="product-detail-section product-extra-info" id="productExtraInfo"></div>
           <p class="product-detail-note">Solar system performance depends on actual appliances, usage hours, installation conditions and component specifications. Ask us to confirm suitability before purchase.</p>
-          <div class="product-modal-actions"><a class="product-modal-whatsapp" id="productDetailWhatsApp" href="#" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Request a quote</a><button class="store-product-add" type="button" id="productModalAddCart">Add to cart</button><a class="product-modal-contact" href="contact.html">Contact us</a></div>
+          <div class="product-modal-actions"><a class="product-modal-whatsapp" id="productDetailWhatsApp" href="#" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Request a quote</a><a class="product-modal-contact" href="contact.html">Contact us</a></div>
         </div>
       </section>
     </div>`);
