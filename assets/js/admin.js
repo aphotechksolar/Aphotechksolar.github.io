@@ -45,6 +45,19 @@ async function loadRequests() {
   $("statQuoted").textContent = allRequests.filter(r => r.status === "Quoted").length;
 }
 
+
+async function loadInvoiceQueue(){
+ const host=$("invoiceQueue");if(!host)return;
+ const [{data:orders,error:oerr},{data:quotes,error:qerr}]=await Promise.all([
+  adminClient.from("orders").select("id,receipt_number,customer_name,customer_phone,total_amount,payment_status,created_at").order("created_at",{ascending:false}).limit(40),
+  adminClient.from("quote_requests").select("id,full_name,phone,preferred_package,quoted_amount,status,created_at").not("quoted_amount","is",null).order("created_at",{ascending:false}).limit(40)
+ ]);
+ if(oerr||qerr){host.innerHTML='<tr><td colspan="5" class="empty">Invoice list could not be loaded.</td></tr>';return;}
+ const rows=[...(quotes||[]).filter(x=>Number(x.quoted_amount)>0).map(x=>({type:"quote",id:x.id,name:x.full_name,phone:x.phone,ref:"Quote #"+x.id,amount:x.quoted_amount,status:x.status,date:x.created_at})),...(orders||[]).map(x=>({type:"order",id:x.id,name:x.customer_name,phone:x.customer_phone,ref:x.receipt_number,amount:x.total_amount,status:x.payment_status,date:x.created_at}))].sort((x,y)=>new Date(y.date)-new Date(x.date));
+ if(!rows.length){host.innerHTML='<tr><td colspan="5" class="empty">No priced quote requests or orders yet. Add a quoted amount to a customer request to prepare its invoice.</td></tr>';return;}
+ host.innerHTML=rows.map(x=>'<tr><td><strong>'+esc(x.name)+'</strong><span class="subtext">'+esc(x.phone||"")+'</span></td><td>'+esc(x.ref)+'</td><td>'+money(x.amount)+'</td><td>'+esc(x.status||"Pending")+'</td><td><a class="small-btn" href="admin-invoice.html?type='+x.type+'&id='+encodeURIComponent(x.id)+'"><i class="fa-solid fa-file-invoice"></i> Prepare invoice</a></td></tr>').join("");
+}
+
 function renderRequests() {
   const filter = $("statusFilter").value;
   const rows = allRequests.filter(r => filter === "all" || r.status === filter);
@@ -499,10 +512,10 @@ function initSolarCalculator() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   if (!await requireAdmin()) return;
-  await Promise.all([loadRequests(), loadProducts(), loadProjects()]);
+  await Promise.all([loadRequests(), loadProducts(), loadProjects(), loadInvoiceQueue()]);
   initSolarCalculator();
   $("statusFilter").addEventListener("change", renderRequests);
-  $("refreshAll").addEventListener("click", () => Promise.all([loadRequests(), loadProducts(), loadProjects()]));
+  $("refreshAll").addEventListener("click", () => Promise.all([loadRequests(), loadProducts(), loadProjects(), loadInvoiceQueue()]));
   $("logoutBtn").addEventListener("click", async () => { await adminClient.auth.signOut(); location.replace("auth.html"); });
   $("showAddProduct").addEventListener("click", () => { $("productForm").reset(); $("productId").value=""; $("productImage").value=""; $("productActive").checked=true; fillProductForm(); });
   $("cancelProduct").addEventListener("click", () => $("productFormWrap").classList.add("hidden"));
