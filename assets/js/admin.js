@@ -85,6 +85,7 @@ async function updateRequest(id, field, value) {
   const item = allRequests.find(r => r.id == id);
   if (item) item[field] = patch[field];
   if (field === "status") { $("statPending").textContent = allRequests.filter(r => r.status === "Pending").length; $("statQuoted").textContent = allRequests.filter(r => r.status === "Quoted").length; }
+  if (field === "quoted_amount") loadInvoiceQueue();
   flash("Quote request updated.");
 }
 
