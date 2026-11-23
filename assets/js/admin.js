@@ -139,10 +139,10 @@ function parseProductSpecifications(value) {
   });
   return result;
 }
-function renderProductGalleryPreview(urls) {
+function renderProductGalleryPreview(urls, existingCount = 0) {
   const target = $("productGalleryPreview");
   if (!target) return;
-  target.innerHTML = (urls || []).map(url => `<img src="${esc(url)}" alt="Product gallery preview">`).join("");
+  target.innerHTML = (urls || []).map((url,index) => `<div class="product-gallery-preview-item"><img src="${esc(url)}" alt="Product gallery preview">${index < existingCount ? `<button type="button" data-remove-gallery="${index}" aria-label="Remove gallery photo ${index+1}">×</button>` : ""}</div>`).join("");
 }
 
 function updateProductImagePreview(src) {
@@ -174,7 +174,7 @@ function fillProductForm(p) {
   $("productAppliances").value = (p?.supported_appliances || []).join("\n");
   $("productGalleryExisting").value = JSON.stringify(p?.gallery || []);
   $("productGalleryFiles").value = "";
-  renderProductGalleryPreview(p?.gallery || []);
+  renderProductGalleryPreview(p?.gallery || [], (p?.gallery || []).length);
   $("productImage").value = p?.image_path || "";
   $("productImageFile").value = "";
   updateProductImagePreview(p?.image_path || "");
@@ -506,6 +506,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   $("logoutBtn").addEventListener("click", async () => { await adminClient.auth.signOut(); location.replace("auth.html"); });
   $("showAddProduct").addEventListener("click", () => { $("productForm").reset(); $("productId").value=""; $("productImage").value=""; $("productActive").checked=true; fillProductForm(); });
   $("cancelProduct").addEventListener("click", () => $("productFormWrap").classList.add("hidden"));
+  $("productGalleryPreview").addEventListener("click", e => {
+    const remove = e.target.closest("[data-remove-gallery]");
+    if (!remove) return;
+    const saved = JSON.parse($("productGalleryExisting").value || "[]");
+    saved.splice(Number(remove.dataset.removeGallery), 1);
+    $("productGalleryExisting").value = JSON.stringify(saved);
+    const selected = Array.from($("productGalleryFiles").files || []);
+    renderProductGalleryPreview([...saved, ...selected.map(f => URL.createObjectURL(f))], saved.length);
+  });
   $("productGalleryFiles").addEventListener("change", () => {
     const files = Array.from($("productGalleryFiles").files || []);
     if (files.length > 5 || files.some(f => !f.type.startsWith("image/") || f.size > 8*1024*1024)) {
@@ -513,7 +522,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       flash("Choose up to 5 images, each under 8 MB.", "error");
       return;
     }
-    renderProductGalleryPreview(files.map(f => URL.createObjectURL(f)));
+    const savedGallery = JSON.parse($("productGalleryExisting").value || "[]");
+    renderProductGalleryPreview([...savedGallery, ...files.map(f => URL.createObjectURL(f))], savedGallery.length);
   });
   $("productImageFile").addEventListener("change", () => {
     const file = $("productImageFile").files[0];
