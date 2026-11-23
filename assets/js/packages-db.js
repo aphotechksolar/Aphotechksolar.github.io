@@ -16,7 +16,7 @@ function productMessage(p){
 function packageCard(p){
   productCache.set(String(p.id), p);
   const isCustom = p.price == null;
-  return `<article class="solar-listing product-open-card" data-product-id="${safe(p.id)}" data-name="${safe(p.name)}" data-description="${safe(p.description)}" tabindex="0" role="button" aria-label="View details for ${safe(p.name)}">
+  return `<article class="solar-listing product-open-card" data-product-id="${safe(p.id)}" data-name="${safe(p.name)}" data-description="${safe(p.description)}" data-capacity="${safe(p.capacity)}" tabindex="0" role="button" aria-label="View details for ${safe(p.name)}">
     <div class="listing-image"><img src="${safe(p.image_path || "assets/images/custom.jpg")}" alt="${safe(p.name)}" loading="lazy"><span class="listing-badge">${safe(p.badge || "Solar")}</span><button class="save-button" onclick="event.stopPropagation(); savePackage('${safe(p.name).replace(/'/g,"\\'")}')" aria-label="Save ${safe(p.name)}"><i class="fa-regular fa-heart"></i></button></div>
     <div class="listing-content"><h3>${safe(p.name)}</h3><div class="listing-price">${formatNaira(p.price)}</div><p class="listing-use">${safe(p.description || "Solar solution")}</p>
     <div class="listing-meta"><span><i class="fa-solid fa-location-dot"></i> ${safe(p.meta_text || "Nigeria")}</span><span><i class="fa-solid fa-solar-panel"></i> ${safe(p.capacity || "Solar")}</span></div>
@@ -24,7 +24,7 @@ function packageCard(p){
 }
 function applianceCard(p){
   productCache.set(String(p.id), p);
-  return `<article class="appliance-card product-open-card" data-product-id="${safe(p.id)}" tabindex="0" role="button" aria-label="View details for ${safe(p.name)}">
+  return `<article class="appliance-card product-open-card" data-product-id="${safe(p.id)}" data-name="${safe(p.name)}" data-description="${safe(p.description)}" data-capacity="${safe(p.capacity)}" tabindex="0" role="button" aria-label="View details for ${safe(p.name)}">
     <div class="appliance-image"><img src="${safe(p.image_path || "assets/images/solar-freezer.jpg")}" alt="${safe(p.name)}" loading="lazy"><span class="appliance-badge">${safe(p.badge || "Solar Powered")}</span></div>
     <div class="appliance-content"><h3>${safe(p.name)}</h3><div class="appliance-price">${formatNaira(p.price)}</div><p>${safe(p.description || "Reliable solar appliance.")}</p>
     <div class="appliance-actions"><button class="product-details-button" type="button" data-open-product="${safe(p.id)}">View details</button><a class="appliance-buy" href="${wa(productMessage(p))}" target="_blank" rel="noopener">Buy Now</a></div></div></article>`;
@@ -96,6 +96,7 @@ async function loadPublicProducts(){
     const applianceGrid=document.querySelector(".appliances-grid");
     if(grid && packages.length) grid.innerHTML=packages.map(packageCard).join("");
     if(applianceGrid && appliances.length) applianceGrid.innerHTML=appliances.map(applianceCard).join("");
+    if (typeof window.filterAphotechProducts === "function") window.filterAphotechProducts();
     document.dispatchEvent(new Event("aphotechProductsLoaded"));
   }catch(e){console.warn("Public product price sync unavailable:",e);}
 }
