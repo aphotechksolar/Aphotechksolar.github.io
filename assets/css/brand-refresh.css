@@ -19,3 +19,10 @@ html{scroll-behavior:smooth}body{background:var(--aph-ivory)!important;color:var
 .logout-btn{border:1px solid #ead5d1!important;border-radius:9px!important;background:#fff7f5!important;color:#9a3d32!important}
 .admin-message{background:var(--aph-forest)!important}
 @media(max-width:760px){.admin-shell{padding:22px 12px 48px!important}.admin-topbar{padding:12px!important}.admin-table{min-width:680px}}
+
+/* Refined status and hero treatments */
+.hero{background-image:linear-gradient(125deg,rgba(16,47,40,.88),rgba(35,83,67,.78)),url("../images/solar-bg.jpg")!important;background-size:cover!important;background-position:center!important}
+.section-label{background:#efe6d2!important;color:var(--aph-forest)!important;border:1px solid #e4d5b5!important}
+.store-status.submitted,.store-status.processing,.status-badge.quoted,.status-badge.reviewed{background:#f1e8d5!important;color:#73571f!important}
+.status-badge.pending{background:#f5eddc!important;color:#785a1e!important}
+.status-badge.completed,.store-status.paid{background:#e5f0e8!important;color:#1c6044!important}
