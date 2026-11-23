@@ -1150,7 +1150,7 @@
 
   function buyNow(packageName, amount) {
     const message = `Hello Aphotech Solar Solution, I would like to request a quotation for ${packageName}. Please confirm the current price, package components and installation details.`;
-    window.open(`https://wa.me/2348165029912?text=${encodeURIComponent(message)}`, "_blank", "noopener");
+    window.location.href = `quote.html?package=${encodeURIComponent(packageName)}`;
   }
 
 
