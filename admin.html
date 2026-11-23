@@ -70,14 +70,29 @@
           <label>Product name<input id="productName" required></label>
           <label>Type<select id="productCategory"><option value="package">Solar Package</option><option value="appliance">Solar Appliance</option></select></label>
           <label>Price (₦)<input id="productPrice" type="number" min="0" step="1" placeholder="Leave blank for Contact Us"></label>
-          <label>Short description<input id="productDescription"></label>
+          <label>Short description<input id="productDescription" placeholder="One-line summary shown on product cards"></label>
+          <label class="full-width">Full product description<textarea id="productLongDescription" rows="4" placeholder="Explain what the customer gets, intended use and important limitations."></textarea></label>
+          <label>Warranty information<input id="productWarranty" placeholder="e.g. 12 months (state actual supplier terms)"></label>
+          <label>Installation information<input id="productInstallation" placeholder="e.g. Installation included within..."></label>
+          <label>Availability<select id="productStockStatus"><option>Available</option><option>Limited Stock</option><option>Pre-order</option><option>Made to Order</option><option>Contact for Availability</option></select></label>
+          <label class="full-width">Technical specifications (one per line: Label: Value)<textarea id="productSpecifications" rows="5" placeholder="Inverter rating: 3kVA&#10;Battery bank: 24V&#10;Solar array: 1,500W"></textarea></label>
+          <label class="full-width">Included components (one per line)<textarea id="productComponents" rows="4" placeholder="Hybrid inverter&#10;Lithium battery&#10;Solar panels&#10;Protection and accessories"></textarea></label>
+          <label class="full-width">Appliances / usage supported (one per line)<textarea id="productAppliances" rows="4" placeholder="Lights&#10;Television&#10;Fans&#10;Refrigerator (subject to load assessment)"></textarea></label>
           <input type="hidden" id="productImage">
+          <input type="hidden" id="productGalleryExisting">
           <label class="product-image-upload">Package image
             <input id="productImageFile" type="file" accept="image/*">
           </label>
           <div class="product-image-preview-wrap">
             <img id="productImagePreview" class="product-image-preview" alt="Selected package image preview" hidden>
             <span id="productImageHint" class="form-help">Choose an image from your phone. JPG, PNG or WebP; maximum 8 MB.</span>
+          </div>
+          <div class="full-width product-gallery-upload">
+            <label>Additional product photos (optional)
+              <input id="productGalleryFiles" type="file" accept="image/*" multiple>
+            </label>
+            <div id="productGalleryPreview" class="product-gallery-preview"></div>
+            <span class="form-help">Select up to 5 extra images. Each image must be 8 MB or less.</span>
           </div>
           <label>Badge<input id="productBadge" placeholder="Popular"></label>
           <label>Capacity<input id="productCapacity" placeholder="3kVA"></label>
