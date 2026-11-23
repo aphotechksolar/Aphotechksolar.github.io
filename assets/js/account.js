@@ -146,4 +146,19 @@ document.getElementById("logoutBtn").addEventListener("click", async function ()
   window.location.replace("auth.html?loggedout=1&v=" + Date.now());
 });
 
+
+async function loadMyStoreOrders() {
+  const message=document.getElementById("ordersMessage");
+  const host=document.getElementById("ordersList");
+  if(!message||!host)return;
+  const {data:sessionData}=await supabaseClient.auth.getSession();
+  const user=sessionData?.session?.user;
+  if(!user)return;
+  const {data:orders,error}=await supabaseClient.from("orders").select("id,receipt_number,total_amount,payment_status,order_status,created_at,paid_at").eq("user_id",user.id).order("created_at",{ascending:false});
+  if(error){message.textContent="Order history could not be loaded. "+error.message;return;}
+  message.textContent=orders?.length?"Your recent purchases are shown below.":"You have not made a purchase yet.";
+  if(!orders?.length){host.innerHTML='<div class="store-empty"><i class="fa-solid fa-bag-shopping"></i><p>Your purchases will appear here.</p><a class="secondary-action" href="packages.html">Start shopping</a></div>';return;}
+  host.innerHTML=orders.map(o=>'<article class="store-panel"><div class="request-top"><div><strong>'+escapeHtml(o.receipt_number)+'</strong><p class="store-muted">'+formatDate(o.created_at)+'</p></div><span class="store-status '+escapeHtml(o.payment_status)+'">'+escapeHtml(o.payment_status.toUpperCase())+'</span></div><div class="store-total"><span>Order total</span><strong>₦'+Number(o.total_amount).toLocaleString("en-NG")+'</strong></div><div class="store-actions"><a class="store-btn secondary" href="order.html?id='+encodeURIComponent(o.id)+'">View order</a>'+(o.payment_status==="paid"?'<a class="store-btn" href="receipt.html?id='+encodeURIComponent(o.id)+'">View receipt</a>':'')+'</div></article>').join("");
+}
 loadDashboard();
+loadMyStoreOrders();
