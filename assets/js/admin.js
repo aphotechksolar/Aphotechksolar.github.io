@@ -124,18 +124,91 @@ function renderProducts() {
   </tr>`).join("");
 }
 
+function updateProductImagePreview(src) {
+  const preview = $("productImagePreview");
+  const hint = $("productImageHint");
+  if (src) {
+    preview.src = src;
+    preview.hidden = false;
+    hint.textContent = "Image selected. It will be uploaded when you save the product.";
+  } else {
+    preview.removeAttribute("src");
+    preview.hidden = true;
+    hint.textContent = "Choose an image from your phone. JPG, PNG or WebP; maximum 8 MB.";
+  }
+}
+
 function fillProductForm(p) {
-  $("productId").value = p?.id || ""; $("productName").value = p?.name || ""; $("productCategory").value = p?.category || "package"; $("productPrice").value = p?.price ?? ""; $("productDescription").value = p?.description || ""; $("productImage").value = p?.image_path || ""; $("productBadge").value = p?.badge || ""; $("productCapacity").value = p?.capacity || ""; $("productSort").value = p?.sort_order ?? 100; $("productActive").checked = p ? !!p.active : true; $("productFormWrap").classList.remove("hidden"); window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+  $("productId").value = p?.id || "";
+  $("productName").value = p?.name || "";
+  $("productCategory").value = p?.category || "package";
+  $("productPrice").value = p?.price ?? "";
+  $("productDescription").value = p?.description || "";
+  $("productImage").value = p?.image_path || "";
+  $("productImageFile").value = "";
+  updateProductImagePreview(p?.image_path || "");
+  $("productBadge").value = p?.badge || "";
+  $("productCapacity").value = p?.capacity || "";
+  $("productSort").value = p?.sort_order ?? 100;
+  $("productActive").checked = p ? !!p.active : true;
+  $("productFormWrap").classList.remove("hidden");
+  window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+}
+
+async function uploadProductImage(file) {
+  if (!file.type.startsWith("image/")) throw new Error("Please choose an image file.");
+  if (file.size > 8 * 1024 * 1024) throw new Error("Image is too large. Please choose an image under 8 MB.");
+  const path = `products/${createCompatibleUUID()}-${makeSafeFileName(file.name)}`;
+  const { error } = await adminClient.storage.from("project-media").upload(path, file, {
+    upsert:false,
+    contentType:file.type || undefined
+  });
+  if (error) throw error;
+  const { data } = adminClient.storage.from("project-media").getPublicUrl(path);
+  return data.publicUrl;
 }
 
 async function saveProduct(e) {
   e.preventDefault();
   const id = $("productId").value;
-  const payload = {name:$("productName").value.trim(),category:$("productCategory").value,price:$("productPrice").value === "" ? null : Number($("productPrice").value),description:$("productDescription").value.trim() || null,image_path:$("productImage").value.trim() || null,badge:$("productBadge").value.trim() || null,capacity:$("productCapacity").value.trim() || null,sort_order:Number($("productSort").value || 100),active:$("productActive").checked};
+  const file = $("productImageFile").files[0];
+  const button = $("productForm").querySelector('button[type="submit"]');
+  const payload = {
+    name:$("productName").value.trim(),
+    category:$("productCategory").value,
+    price:$("productPrice").value === "" ? null : Number($("productPrice").value),
+    description:$("productDescription").value.trim() || null,
+    image_path:$("productImage").value.trim() || null,
+    badge:$("productBadge").value.trim() || null,
+    capacity:$("productCapacity").value.trim() || null,
+    sort_order:Number($("productSort").value || 100),
+    active:$("productActive").checked
+  };
   if (!payload.name) return flash("Product name is required.", "error");
-  const result = id ? await adminClient.from("products").update(payload).eq("id", id) : await adminClient.from("products").insert(payload);
-  if (result.error) { flash(result.error.message || "Could not save product.", "error"); return; }
-  flash(id ? "Product updated." : "Product added."); $("productFormWrap").classList.add("hidden"); $("productForm").reset(); $("productActive").checked = true; await loadProducts();
+  button.disabled = true;
+  button.textContent = "Saving...";
+  try {
+    if (file) {
+      flash("Uploading product image...", "success");
+      payload.image_path = await uploadProductImage(file);
+    }
+    const result = id
+      ? await adminClient.from("products").update(payload).eq("id", id)
+      : await adminClient.from("products").insert(payload);
+    if (result.error) throw result.error;
+    flash(id ? "Product updated." : "Product added.");
+    $("productFormWrap").classList.add("hidden");
+    $("productForm").reset();
+    $("productImage").value = "";
+    updateProductImagePreview("");
+    $("productActive").checked = true;
+    await loadProducts();
+  } catch (err) {
+    flash(err.message || "Could not save product.", "error");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Save Product";
+  }
 }
 
 
@@ -385,8 +458,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   $("statusFilter").addEventListener("change", renderRequests);
   $("refreshAll").addEventListener("click", () => Promise.all([loadRequests(), loadProducts(), loadProjects()]));
   $("logoutBtn").addEventListener("click", async () => { await adminClient.auth.signOut(); location.replace("auth.html"); });
-  $("showAddProduct").addEventListener("click", () => { $("productForm").reset(); $("productId").value=""; $("productActive").checked=true; fillProductForm(); });
+  $("showAddProduct").addEventListener("click", () => { $("productForm").reset(); $("productId").value=""; $("productImage").value=""; $("productActive").checked=true; fillProductForm(); });
   $("cancelProduct").addEventListener("click", () => $("productFormWrap").classList.add("hidden"));
+  $("productImageFile").addEventListener("change", () => {
+    const file = $("productImageFile").files[0];
+    if (!file) return updateProductImagePreview($("productImage").value);
+    if (!file.type.startsWith("image/")) {
+      $("productImageFile").value = "";
+      updateProductImagePreview($("productImage").value);
+      return flash("Please choose an image file.", "error");
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      $("productImageFile").value = "";
+      updateProductImagePreview($("productImage").value);
+      return flash("Image is too large. Please choose an image under 8 MB.", "error");
+    }
+    updateProductImagePreview(URL.createObjectURL(file));
+  });
   $("productForm").addEventListener("submit", saveProduct);
   $("closeModal").addEventListener("click", () => $("requestModal").classList.add("hidden"));
   $("requestModal").addEventListener("click", e => { if (e.target.id === "requestModal") $("requestModal").classList.add("hidden"); });
